@@ -4,12 +4,14 @@
 /* Sidebar layout and basic page styles */
 :root {
   --sidebar-width: 280px;
-  --sidebar-bg: #0f172a; /* dark navy */
-  --accent: #93c5fd; /* light blue */
+  --sidebar-bg: #080808;
+  --accent: #676767;
   --muted: rgba(255,255,255,0.8);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -42,14 +44,9 @@ h1,h2,h3,h4,h5 {
   position: relative; /* allow absolutely-positioning the footer inside the sidebar */
 }
 
-.sidebar-inner {
-  width: 100%;
-}
+.sidebar-inner { width: 100%; }
 
-.headshot {
-  text-align: center;
-  margin-bottom: 12px;
-}
+.headshot { text-align: center; margin-bottom: 12px; }
 
 .headshot img {
   width: 165px;
@@ -87,6 +84,10 @@ h1,h2,h3,h4,h5 {
   margin-bottom: 10px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.contact-toggle:hover {
+  background: rgba(255,255,255,0.06);
 }
 
 /* Subtle dividing line between role and contact */
@@ -131,31 +132,12 @@ h1,h2,h3,h4,h5 {
   flex: 0 0 36px;
 }
 
-.contact-item svg {
-  width: 18px;
-  height: 18px;
-}
+.contact-item svg { width: 18px; height: 18px; }
+.contact-item img { width: 18px; height: 18px; display: block; filter: brightness(0) invert(1); }
 
-.contact-item img {
-  width: 18px;
-  height: 18px;
-  display: block;
-  /* make raster or inline SVG images appear white to match other icons */
-  filter: brightness(0) invert(1);
-}
+.contact-text { display: flex; flex-direction: column; }
+.contact-text .label { font-size: 0.72rem; color: rgba(255,255,255,0.7); margin-bottom: 3px; }
 
-.contact-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.contact-text .label {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 3px;
-}
-
-/* default for contact values: links get accent, non-links stay bright */
 .contact-text .value {
   color: var(--accent);
   text-decoration: none;
@@ -164,34 +146,18 @@ h1,h2,h3,h4,h5 {
 }
 
 /* Hide the manual line-break on mobile; show on desktop */
-.desktop-only {
-  display: none;
-}
+.desktop-only { display: none; }
 
 @media (min-width: 701px) {
-  .desktop-only {
-    display: inline;
-  }
+  .desktop-only { display: inline; }
 }
 
-.contact-text .value:not(a) {
-  color: rgba(255,255,255,0.95);
-}
-
-/* Make email and phone link values match the location color (white-ish) */
+.contact-text .value:not(a) { color: rgba(255,255,255,0.95); }
 .contact-item.email .contact-text .value,
-.contact-item.phone .contact-text .value {
-  color: rgba(255,255,255,0.95);
-}
+.contact-item.phone .contact-text .value { color: rgba(255,255,255,0.95); }
 
-.contact-item + .contact-item {
-  border-top: 1px dashed rgba(255,255,255,0.03);
-  padding-top: 12px;
-}
-
-.contact-item:last-child {
-  padding-bottom: 0;
-}
+.contact-item + .contact-item { border-top: 1px dashed rgba(255,255,255,0.03); padding-top: 12px; }
+.contact-item:last-child { padding-bottom: 0; }
 
 .content {
   flex: 1 1 auto;
@@ -220,29 +186,12 @@ h1,h2,h3,h4,h5 {
   text-decoration: none;
 }
 
-.social-link svg {
-  width: 18px;
-  height: 18px;
-}
-
-.social-link img {
-  width: 18px;
-  height: 18px;
-  display: block;
-  /* make raster or inline SVG images appear white to match other icons */
-  filter: brightness(0) invert(1);
-}
-
-.social-link:hover {
-  background: rgba(255,255,255,0.08);
-}
+.social-link svg,
+.social-link img { width: 18px; height: 18px; display: block; filter: brightness(0) invert(1); }
+.social-link:hover { background: rgba(255,255,255,0.08); }
 
 /* Sidebar footer download button */
-.sidebar-footer {
-  margin-top: 18px;
-  display: flex;
-  justify-content: center;
-}
+.sidebar-footer { margin-top: 18px; display: flex; justify-content: center; }
 
 .download-resume {
   display: inline-block;
@@ -256,9 +205,7 @@ h1,h2,h3,h4,h5 {
   border: 1px solid rgba(255,255,255,0.04);
 }
 
-.download-resume:hover {
-  background: rgba(255,255,255,0.08);
-}
+.download-resume:hover { background: rgba(255,255,255,0.08); }
 
 /* Position the resume button at the bottom of the sidebar on desktop */
 @media (min-width: 701px) {
@@ -271,77 +218,38 @@ h1,h2,h3,h4,h5 {
     display: flex;
     justify-content: center;
   }
-  .download-resume {
-    width: auto;
-    max-width: 100%;
-  }
+  .download-resume { width: auto; max-width: 100%; }
 }
 
 /* On mobile, keep social links centered under expanded contact section */
 @media (max-width: 700px) {
-  .social-links {
-    justify-content: flex-start;
-  }
+  .social-links { justify-content: flex-start; }
 }
 
 /* Responsive adjustments for the footer on mobile */
 @media (max-width: 700px) {
-  .sidebar-footer {
-    margin-top: 14px;
-  }
-  .download-resume {
-    width: 100%;
-    text-align: center;
-  }
-  .contact {
-    display: block;
-  }
-  .contact.open {
-    display: block;
-  }
+  .sidebar-footer { margin-top: 14px; }
+  .download-resume { width: 100%; text-align: center; }
+  .contact { display: block; }
+  .contact.open { display: block; }
 }
 
 /* Responsive: stack sidebar on top for small screens */
 @media (max-width: 700px) {
-  body {
-    flex-direction: column;
-  }
+  body { flex-direction: column; }
   .sidebar {
     width: 100%;
     padding: 20px;
     align-items: center;
   }
-  .contact-toggle {
-    display: block;
-  }
-  /* hide contact list by default on mobile; use .open modifier to show */
-  .contact {
-    display: none;
-    width: 100%;
-  }
-  .contact.open {
-    display: block;
-  }
-  /* Left-align contact content on mobile when expanded */
-  .contact-item {
-    justify-content: flex-start;
-    text-align: left;
-  }
-  .contact-item .icon {
-    margin-bottom: 0;
-  }
-  .contact-text {
-    align-items: flex-start;
-  }
-  .content {
-    padding: 20px;
-  }
-  .social-links {
-    margin-top: 14px;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-  }
+  .contact-toggle { display: block; }
+  .contact { display: none; width: 100%; }
+  .contact.open { display: block; }
+  .contact-item { justify-content: flex-start; text-align: left; }
+  .contact-item .icon { margin-bottom: 0; }
+  .contact-text { align-items: flex-start; }
+  .content { padding: 20px; }
+  .social-links { margin-top: 14px; display: flex; justify-content: center; gap: 12px; }
 
   .social-link {
     display: inline-flex;
@@ -355,20 +263,7 @@ h1,h2,h3,h4,h5 {
     text-decoration: none;
   }
 
-  .social-link svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .social-link img {
-    width: 18px;
-    height: 18px;
-    display: block;
-    /* make raster or inline SVG images appear white to match other icons */
-    filter: brightness(0) invert(1);
-  }
-
-  .social-link:hover {
-    background: rgba(255,255,255,0.08);
-  }
+  .social-link svg,
+  .social-link img { width: 18px; height: 18px; display: block; filter: brightness(0) invert(1); }
+  .social-link:hover { background: rgba(255,255,255,0.08); }
 }

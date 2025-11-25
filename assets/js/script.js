@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (!toggle || !contact) return;
 
-  function updateState(open) {
-    if (open) {
+  function setOpen(isOpen) {
+    if (isOpen) {
       contact.classList.add('open');
       toggle.setAttribute('aria-expanded', 'true');
       contact.setAttribute('aria-hidden', 'false');
@@ -18,21 +18,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Start closed on small screens
   const mq = window.matchMedia('(max-width: 700px)');
+
   function handleMq(e) {
-    if (e.matches) {
-      updateState(false);
-    } else {
-      // On larger screens keep it visible
-      updateState(true);
-    }
+    // On small screens start closed, on larger keep visible
+    setOpen(!e.matches);
   }
-  mq.addEventListener ? mq.addEventListener('change', handleMq) : mq.addListener(handleMq);
+
+  if (mq.addEventListener) {
+    mq.addEventListener('change', handleMq);
+  } else {
+    mq.addListener(handleMq);
+  }
+
   handleMq(mq);
 
   toggle.addEventListener('click', function () {
     const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-    updateState(!isOpen);
+    setOpen(!isOpen);
   });
 });
