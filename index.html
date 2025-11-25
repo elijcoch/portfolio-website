@@ -18,7 +18,7 @@
         <h2>Contact</h2>
         <ul>
           <li class="contact-item email">
-            <span class="icon" aria-hidden>
+            <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M3 6.5v11A1.5 1.5 0 0 0 4.5 19h15a1.5 1.5 0 0 0 1.5-1.5v-11A1.5 1.5 0 0 0 19.5 5h-15A1.5 1.5 0 0 0 3 6.5z" stroke="currentColor" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 7.25L12 13 3 7.25" stroke="currentColor" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
             <div class="contact-text">
@@ -27,7 +27,7 @@
             </div>
           </li>
           <li class="contact-item phone">
-            <span class="icon" aria-hidden>
+            <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.09 8.81 19.79 19.79 0 0 1 0 0.18 2 2 0 0 1 2 0h3a2 2 0 0 1 2 1.72c.12.95.38 1.88.75 2.76a2 2 0 0 1-.45 2.11L6.91 8.09a16 16 0 0 0 8 8l1.5-1.5a2 2 0 0 1 2.11-.45c.88.37 1.81.63 2.76.75A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
             <div class="contact-text">
@@ -36,7 +36,7 @@
             </div>
           </li>
           <li class="contact-item location">
-            <span class="icon" aria-hidden>
+            <span class="icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M21 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="2" stroke="currentColor" stroke-width="1.25" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
             <div class="contact-text">
@@ -64,14 +64,229 @@
     
     <section id="about" class="page active">
       <h2>About Me</h2>
-      <!-- Content will go here -->
+      
+      <!-- Personal Summary / Autobiography -->
+      <section class="about-section summary">
+        <h3>Personal Summary</h3>
+        <p>
+          <!-- Add your personal summary here -->
+          Write your autobiography or personal summary here. Share your journey, interests, and what drives you in your field.
+        </p>
+      </section>
+
+      <!-- Certifications -->
+      <section class="about-section certifications">
+        <h3>Certifications</h3>
+        <ul class="certifications-list">
+          <!-- Add your certifications here -->
+          <li class="certification-item" data-image="./assets/images/FoodHandler.png" role="button" tabindex="0">
+            <div class="cert-icon">
+              <img src="./assets/images/foodhandler-icon.png" alt="Food Handler icon">
+            </div>
+            <div class="cert-content">
+              <h4 class="cert-name">Texas Food Handler</h4>
+              <p class="cert-issuer">Learn2Serve</p>
+              <p class="cert-date">June 2025 - 2027</p>
+            </div>
+          </li>
+          <li class="certification-item" data-image="./assets/images/TABC.png" role="button" tabindex="0">
+            <div class="cert-icon">
+              <img src="./assets/images/tabc-icon.png" alt="TABC icon">
+            </div>
+            <div class="cert-content">
+              <h4 class="cert-name">TABC Seller/Server</h4>
+              <p class="cert-issuer">Learn2Serve</p>
+              <p class="cert-date">June 2025 - 2027</p>
+            </div>
+          </li>
+          <!-- Add more certifications as needed -->
+        </ul>
+      </section>
+
+      <!-- Recommendations -->
+      <section class="about-section recommendations">
+        <h3>Recommendations</h3>
+        <div class="recommendations-list">
+          <!-- Add recommendations/references here -->
+          <div class="recommendation-item" data-letter-image="./assets/images/recommendation.png" role="button" tabindex="0">
+            <div class="recommender-photo">
+              <img src="./assets/images/kim-bentley.png" alt="Photo of Recommender Name">
+            </div>
+            <div class="recommendation-content">
+              <h4 class="recommender-name">Kim Bentley</h4>
+              <p class="recommender-relationship">Senior English IV Teacher / Dual-Credit English Proctor</p>
+              <p class="recommendation-date">March 6, 2025</p>
+              <blockquote class="recommendation-preview">
+                "Elijah Cochran has established himself as an outstanding student among the graduating class of 2025..."
+              </blockquote>
+              <span class="view-letter-hint">Click to view full letter</span>
+            </div>
+          </div>
+          <!-- Add more recommendations as needed -->
+        </div>
+      </section>
+
+      <!-- Education -->
+      <section class="about-section education">
+        <h3>Education</h3>
+        <ul class="education-list">
+          <!-- Add your education here -->
+          <li class="education-item">
+            <div class="school-logo">
+              <img src="./assets/images/bisd-icon.png" alt="School logo">
+            </div>
+            <div class="education-content">
+              <h4 class="degree">Highschool Diploma</h4>
+              <p class="institution">Bushland Independent School Disctrict</p>
+              <p class="education-date">2021 - 2025</p>
+              <p class="education-details">Graduated in the top 18% of my class. Awarded Superintendent Scholar all four years. Cumulative 5-Point GPA of 4.36.</p>
+            </div>
+            <a href="https://www.bushlandisd.net/" target="_blank" rel="noopener noreferrer" class="school-link" aria-label="Visit Bushland ISD website">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15 3h6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li class="education-item">
+              <div class="school-logo">
+                  <img src="./assets/images/ac-icon.png" alt="School logo">
+              </div>
+              <div class="education-content">
+                  <h4 class="degree">Associate's Degree in General Studies</h4>
+                  <p class="institution">Amarillo Community College</p>
+                  <p class="education-date">2021 - 2025</p>
+                  <p class="education-details">Enrolled through and completed the Dual-Degree program. Cumulative 4-Point GPA of 3.508.</p>
+              </div>
+              <a href="https://www.actx.edu/" target="_blank" rel="noopener noreferrer" class="school-link" aria-label="Visit Amarillo College website">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M15 3h6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+          </li>
+          <li class="education-item">
+              <div class="school-logo">
+                  <img src="./assets/images/ttu-icon.png" alt="School logo">
+              </div>
+              <div class="education-content">
+                  <h4 class="degree">Bachelor's Degree in Computer Science</h4>
+                  <p class="institution">Texas Tech University</p>
+                  <p class="education-date">2025 - 2029</p>
+                  <p class="education-details">Currently enrolled full-time. Allowed to study restricted major.</p>
+              </div>
+              <a href="https://www.ttu.edu/" target="_blank" rel="noopener noreferrer" class="school-link" aria-label="Visit Texas Tech University website">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M15 3h6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10 14L21 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+          </li>
+          <!-- Add more education entries as needed -->
+        </ul>
+      </section>
     </section>
-    
+
+    <!-- Portfolio Page -->
     <section id="portfolio" class="page">
       <h2>Portfolio</h2>
-      <!-- Content will go here -->
+      <!-- Add your portfolio content here -->
     </section>
   </main>
-  <script src="./assets/js/script.js" defer></script>
+
+  <!-- Modal for certification images -->
+  <div id="cert-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title" class="modal-title">Certification</h3>
+        <div class="modal-controls">
+          <button class="zoom-btn zoom-out" aria-label="Zoom out" style="display: none;">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="zoom-btn zoom-in" aria-label="Zoom in" style="display: none;">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 11h6M11 8v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="zoom-btn zoom-reset" aria-label="Reset zoom" style="display: none;">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M11 11h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="fullscreen-btn" aria-label="Toggle fullscreen">
+            <svg class="fullscreen-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="exit-fullscreen-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="display: none;">
+              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <img id="cert-image-viewer" class="cert-image-viewer" src="" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for recommendation letter images -->
+  <div id="letter-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="letter-modal-title">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="letter-modal-title" class="modal-title">Recommendation Letter</h3>
+        <div class="modal-controls">
+          <button class="zoom-btn zoom-out" aria-label="Zoom out" style="display: none;">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="zoom-btn zoom-in" aria-label="Zoom in" style="display: none;">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 11h6M11 8v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="zoom-btn zoom-reset" aria-label="Reset zoom" style="display: none;">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M11 11h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="fullscreen-btn" aria-label="Toggle fullscreen">
+            <svg class="fullscreen-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="exit-fullscreen-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="display: none;">
+              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="modal-close" aria-label="Close modal">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <img id="letter-image-viewer" class="cert-image-viewer" src="" alt="">
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/js/script.js"></script>
 </body>
 </html>
