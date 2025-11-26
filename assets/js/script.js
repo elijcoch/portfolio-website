@@ -1,20 +1,54 @@
 document.addEventListener('DOMContentLoaded', function () {
   const toggle = document.getElementById('contact-toggle');
   const contact = document.getElementById('contact-list');
+  const sidebar = document.querySelector('.sidebar');
+  const footer = document.querySelector('.sidebar-footer');
 
-  if (toggle && contact) {
+  if (toggle && contact && sidebar && footer) {
     const setOpen = (isOpen) => {
       contact.classList.toggle('open', isOpen);
       toggle.setAttribute('aria-expanded', isOpen);
       contact.setAttribute('aria-hidden', !isOpen);
       toggle.textContent = isOpen ? 'Hide Contact Info' : 'Show Contact Info';
+      if (sidebar.classList.contains('sidebar-compact')) {
+        sidebar.classList.toggle('sidebar-scroll', isOpen);
+        if (!isOpen) sidebar.scrollTop = 0;
+      } else {
+        sidebar.classList.remove('sidebar-scroll');
+      }
     };
 
     const mq = window.matchMedia('(max-width: 700px)');
-    const handleMq = (e) => setOpen(!e.matches);
 
+    const isOverlapping = () => {
+      contact.classList.add('open');
+      contact.setAttribute('aria-hidden','false');
+      const footerRect = footer.getBoundingClientRect();
+      const social = contact.querySelector('.social-links');
+      const targetEl = social || contact;
+      const targetRect = targetEl.getBoundingClientRect();
+      return footerRect.top <= targetRect.bottom + 4;
+    };
+
+    const evaluateCompact = () => {
+      if (!sidebar) return;
+      sidebar.classList.remove('sidebar-compact','sidebar-scroll');
+      const isMobile = mq.matches;
+      if (isMobile) { setOpen(false); return; }
+      const overlap = isOverlapping();
+      if (overlap) {
+        sidebar.classList.add('sidebar-compact');
+        setOpen(false);
+      } else {
+        setOpen(true);
+      }
+    };
+
+    const handleMq = () => evaluateCompact();
     mq.addEventListener ? mq.addEventListener('change', handleMq) : mq.addListener(handleMq);
-    handleMq(mq);
+    window.addEventListener('resize', evaluateCompact);
+    requestAnimationFrame(evaluateCompact);
+
     toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
   }
 
@@ -25,13 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
     link.addEventListener('click', function (e) {
       e.preventDefault();
       const targetPage = this.getAttribute('data-page');
-      
       navLinks.forEach(navLink => navLink.classList.remove('active'));
       this.classList.add('active');
-      
       pages.forEach(page => page.classList.remove('active'));
       document.getElementById(targetPage).classList.add('active');
-      
       window.location.hash = targetPage;
     });
   });
@@ -76,8 +107,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (fullscreenBtn) {
         fullscreenBtn.addEventListener('click', () => {
           const isFullscreen = this.modal.classList.toggle('fullscreen');
-          this.updateFullscreenIcon(isFullscreen);
-          this.toggleZoomButtons(isFullscreen);
+            this.updateFullscreenIcon(isFullscreen);
+            this.toggleZoomButtons(isFullscreen);
           
           if (!isFullscreen) this.reset();
         });
@@ -300,7 +331,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     };
     
-    // Prevent modal from opening when clicking the school link
     if (schoolLink) {
       schoolLink.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -536,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function () {
     projectModalTitle.textContent = title;
     projectModal.querySelector('.project-dates').textContent = dates;
     
-    const typeBadgeModal = projectModal.querySelector('.project-type-badge-modal');
+    const typeBadgeModal = projectModal.querySelector('.project-type-badge');
     if (typeBadgeModal) {
       if (typeBadge) {
         typeBadgeModal.textContent = typeBadge;
