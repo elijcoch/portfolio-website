@@ -45,40 +45,21 @@ h1,h2,h3,h4,h5 {
   padding: 32px 20px;
   display: flex;
   align-items: flex-start;
+  align-items: center;
   flex-direction: column;
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+  overflow-y: visible;
+  /* removed internal scrollbar appearance */
+  scrollbar-width: none;
 }
 
-.sidebar:hover {
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-}
-
-.sidebar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 4px;
-}
-
-.sidebar:hover::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.sidebar:hover::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
+/* Remove webkit scrollbar for sidebar */
+.sidebar::-webkit-scrollbar { width: 0; height: 0; }
+.sidebar::-webkit-scrollbar-thumb { background: transparent; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
 
 .headshot { text-align: center; margin-bottom: 12px; }
 
@@ -128,6 +109,7 @@ h1,h2,h3,h4,h5 {
   margin-top: 8px;
   padding-top: 14px;
   border-top: 1px solid rgba(255,255,255,0.06);
+  width: 100%;
 }
 
 .contact h2 {
@@ -257,6 +239,7 @@ h1,h2,h3,h4,h5 {
   display: flex;
   justify-content: center;
   gap: 12px;
+  width: 100%;
 }
 
 .social-link {
@@ -276,6 +259,8 @@ h1,h2,h3,h4,h5 {
 .social-link:hover { background: rgba(255,255,255,0.08); }
 
 .sidebar-footer { margin-top: 18px; display: flex; justify-content: center; }
+/* Center footer content along the same axis as headshot/name */
+.sidebar-footer { align-self: center; }
 
 .download-resume {
   display: inline-block;
@@ -497,6 +482,21 @@ h1,h2,h3,h4,h5 {
   gap: 16px;
   align-items: center;
   position: relative;
+}
+
+.education-item[data-credential-image] {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.education-item[data-credential-image]:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-left-color: var(--text-primary);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.education-item[data-credential-image]:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .school-logo {
@@ -925,15 +925,81 @@ h1,h2,h3,h4,h5 {
   margin: 0;
 }
 
+.site-footer {
+  margin-top: 60px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.site-footer p:last-child {
+  margin-bottom: 0;
+}
+
+.footer-license {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.footer-license a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-license a:hover {
+  color: var(--text-primary);
+}
+
+.project-skills { margin-top: 8px; }
+.project-skills .project-skill { margin-bottom: 8px; }
+
+.site-footer {
+  padding: 16px 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-color);
+  margin-top: 48px;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.site-footer a:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
 @media (min-width: 701px) {
   .desktop-only { display: inline; }
   
+  /* Stack main content and footer vertically so footer is visible */
+  body { flex-direction: column; }
+  
+  /* Ensure footer spans available width beside fixed sidebar */
+  .site-footer { width: calc(100% - var(--sidebar-width)); margin-left: var(--sidebar-width); }
+  
   .sidebar-footer {
     position: absolute;
-    left: 20px;
-    right: 20px;
+    left: 0;
+    right: 0;
     bottom: 32px;
     margin-top: 0;
+    justify-content: center;
   }
 }
 
@@ -999,7 +1065,7 @@ h1,h2,h3,h4,h5 {
     font-size: 2rem;
   }
   
-  .sidebar-footer { margin-top: 14px; }
+  .sidebar-footer { margin-top: 14px; width: 100%; }
   .download-resume { width: 100%; text-align: center; }
   
   .about-section {
@@ -1215,4 +1281,48 @@ h1,h2,h3,h4,h5 {
   .project-skill p {
     font-size: 0.8rem;
   }
+
+  .site-footer {
+    margin-top: 60px;
+    padding: 24px 0;
+  }
+
+  .site-footer p {
+    font-size: 0.8rem;
+  }
 }
+
+/* Project meta row with skills and GitHub link */
+.project-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.project-meta-row .project-tags { flex: 1; }
+.project-github {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.95);
+  border: 1px solid var(--border-color);
+  text-decoration: none;
+}
+.project-github:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+.project-github svg { width: 18px; height: 18px; display: block; }
+
+/* Project modal GitHub icon link (top-right) */
+.project-modal-github {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.95);
+  border: 1px solid var(--border-color);
+  text-decoration: none;
+}
+.project-modal-github:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+.project-modal-github svg { width: 18px; height: 18px; display: block; }

@@ -422,10 +422,21 @@ document.addEventListener('DOMContentLoaded', function () {
     function update() {
       const visibleCards = cards();
       const total = visibleCards.length;
-      if (total === 0) return;
+      const carousel = section.querySelector('.projects-carousel');
+
+      // Hide controls when no cards
+      if (total === 0) {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+        if (dotsContainer) {
+          dotsContainer.classList.add('hidden');
+          dotsContainer.innerHTML = '';
+        }
+        if (carousel) carousel.style.paddingBottom = '0px';
+        return;
+      }
 
       const isMobile = window.matchMedia('(max-width: 700px)').matches;
-      const carousel = section.querySelector('.projects-carousel');
 
       if (!isMobile) {
         index = 0;
@@ -566,6 +577,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const projectModalOverlay = projectModal ? projectModal.querySelector('.modal-overlay') : null;
   const projectPrevBtn = projectModal ? projectModal.querySelector('.gallery-btn.prev') : null;
   const projectNextBtn = projectModal ? projectModal.querySelector('.gallery-btn.next') : null;
+  const projectModalGithub = projectModal ? projectModal.querySelector('.project-modal-github') : null;
 
   let galleryImages = [];
   let galleryIndex = 0;
@@ -595,6 +607,20 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       skillsContainer.appendChild(detailsEl);
     });
+
+    // Set GitHub repo link in modal if available on card
+    if (projectModalGithub) {
+      const cardRepoEl = card.querySelector('.project-github');
+      const repoHref = cardRepoEl ? cardRepoEl.getAttribute('href') : '';
+      if (repoHref) {
+        projectModalGithub.href = repoHref;
+        projectModalGithub.removeAttribute('hidden');
+        projectModalGithub.style.display = '';
+      } else {
+        projectModalGithub.setAttribute('hidden', '');
+        projectModalGithub.removeAttribute('href');
+      }
+    }
 
     projectModalTitle.textContent = title;
     projectModal.querySelector('.project-dates').textContent = dates;
@@ -649,4 +675,22 @@ document.addEventListener('DOMContentLoaded', function () {
   if (projectModalOverlay) projectModalOverlay.addEventListener('click', closeProjectModal);
   if (projectNextBtn) projectNextBtn.addEventListener('click', nextImage);
   if (projectPrevBtn) projectPrevBtn.addEventListener('click', prevImage);
+
+  // Reuse certification modal for education credentials
+  const educationCredentialItems = document.querySelectorAll('.education-item[data-credential-image]');
+  educationCredentialItems.forEach(item => {
+    const degreeEl = item.querySelector('.degree');
+    const title = degreeEl ? degreeEl.textContent : 'Credential';
+    function openCredential() {
+      const imagePath = item.getAttribute('data-credential-image');
+      if (!imagePath) return;
+      openModal(title, imagePath);
+    }
+    item.setAttribute('role', item.getAttribute('role') || 'button');
+    item.setAttribute('tabindex', item.getAttribute('tabindex') || '0');
+    item.addEventListener('click', openCredential);
+    item.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCredential(); }
+    });
+  });
 });
