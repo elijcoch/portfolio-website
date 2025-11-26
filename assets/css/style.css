@@ -417,12 +417,13 @@ h1, h2, h3, h4, h5 {
 }
 
 .school-link {
-  flex: 0 0 36px;
-  width: 36px;
+  flex: 0 0 auto;
+  width: auto;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   color: var(--text-secondary);
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
@@ -431,6 +432,9 @@ h1, h2, h3, h4, h5 {
   position: absolute;
   top: 12px;
   right: 12px;
+  padding: 0 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .school-link:hover {
@@ -438,7 +442,11 @@ h1, h2, h3, h4, h5 {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.school-link svg { width: 18px; height: 18px; }
+.school-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.school-link-text {
+  white-space: nowrap;
+}
 
 .recommendations-list {
   display: grid;
@@ -1198,6 +1206,13 @@ h1, h2, h3, h4, h5 {
 
   .school-logo { margin-bottom: 12px; }
 
+  .school-link-text { display: none !important; }
+  
+  .school-link {
+    width: 36px;
+    padding: 0;
+  }
+  
   .project-section.about-section { padding: 20px 16px 24px; }
   .project-section.about-section .projects-heading { font-size: 1.35rem; padding-bottom: 10px; }
   

@@ -290,6 +290,7 @@ document.addEventListener('DOMContentLoaded', function () {
   educationCredentialItems.forEach(item => {
     const degreeEl = item.querySelector('.degree');
     const title = degreeEl ? degreeEl.textContent : 'Credential';
+    const schoolLink = item.querySelector('.school-link');
     
     const openCredential = () => {
       const imagePath = item.getAttribute('data-credential-image');
@@ -298,6 +299,13 @@ document.addEventListener('DOMContentLoaded', function () {
         openModal(title, imagePath, iconPath, false);
       }
     };
+    
+    // Prevent modal from opening when clicking the school link
+    if (schoolLink) {
+      schoolLink.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
     
     item.setAttribute('role', item.getAttribute('role') || 'button');
     item.setAttribute('tabindex', item.getAttribute('tabindex') || '0');
