@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const mq = window.matchMedia('(max-width: 700px)');
 
     const isOverflowing = () => {
-      // Measure with contact expanded to capture true height
       const wasOpen = contact.classList.contains('open');
       contact.classList.add('open');
       contact.setAttribute('aria-hidden', 'false');
