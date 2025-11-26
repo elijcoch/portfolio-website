@@ -83,10 +83,27 @@ document.addEventListener('DOMContentLoaded', function () {
   let certTranslateX = 0;
   let certTranslateY = 0;
 
-  function openModal(certName, imagePath) {
+  function openModal(certName, imagePath, iconPath, isCertification) {
     modalTitle.textContent = certName;
     imageViewer.setAttribute('src', imagePath);
     imageViewer.setAttribute('alt', certName + ' Certification');
+    
+    const certIcon = modal.querySelector('#cert-icon');
+    if (certIcon && iconPath) {
+      certIcon.setAttribute('src', iconPath);
+      certIcon.setAttribute('alt', certName + ' icon');
+      certIcon.style.display = 'block';
+      
+      if (isCertification) {
+        certIcon.classList.add('cert-type');
+      } else {
+        certIcon.classList.remove('cert-type');
+      }
+    } else if (certIcon) {
+      certIcon.style.display = 'none';
+      certIcon.classList.remove('cert-type');
+    }
+    
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -213,7 +230,8 @@ document.addEventListener('DOMContentLoaded', function () {
     item.addEventListener('click', function() {
       const imagePath = this.getAttribute('data-image');
       const certName = this.querySelector('.cert-name').textContent;
-      openModal(certName, imagePath);
+      const iconPath = this.querySelector('.cert-icon img')?.getAttribute('src');
+      openModal(certName, imagePath, iconPath, true);
     });
 
     item.addEventListener('keydown', function(e) {
@@ -221,7 +239,8 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         const imagePath = this.getAttribute('data-image');
         const certName = this.querySelector('.cert-name').textContent;
-        openModal(certName, imagePath);
+        const iconPath = this.querySelector('.cert-icon img')?.getAttribute('src');
+        openModal(certName, imagePath, iconPath, true);
       }
     });
   });
@@ -258,10 +277,20 @@ document.addEventListener('DOMContentLoaded', function () {
   let letterTranslateX = 0;
   let letterTranslateY = 0;
 
-  function openLetterModal(recommenderName, imagePath) {
+  function openLetterModal(recommenderName, imagePath, photoPath) {
     letterModalTitle.textContent = 'Recommendation from ' + recommenderName;
     letterImageViewer.setAttribute('src', imagePath);
     letterImageViewer.setAttribute('alt', recommenderName + ' Recommendation Letter');
+    
+    const recommenderPhoto = letterModal.querySelector('#letter-recommender-photo');
+    if (recommenderPhoto && photoPath) {
+      recommenderPhoto.setAttribute('src', photoPath);
+      recommenderPhoto.setAttribute('alt', 'Photo of ' + recommenderName);
+      recommenderPhoto.style.display = 'block';
+    } else if (recommenderPhoto) {
+      recommenderPhoto.style.display = 'none';
+    }
+    
     letterModal.classList.add('active');
     letterModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -360,20 +389,38 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   recommendationItems.forEach(item => {
-    item.addEventListener('click', function() {
+    const photoElement = item.querySelector('.recommender-photo');
+    
+    item.addEventListener('click', function(e) {
+      if (e.target.closest('.recommender-photo')) {
+        return;
+      }
       const imagePath = this.getAttribute('data-letter-image');
+      const photoPath = this.getAttribute('data-recommender-photo');
       const recommenderName = this.querySelector('.recommender-name').textContent;
-      openLetterModal(recommenderName, imagePath);
+      openLetterModal(recommenderName, imagePath, photoPath);
     });
 
     item.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         const imagePath = this.getAttribute('data-letter-image');
+        const photoPath = this.getAttribute('data-recommender-photo');
         const recommenderName = this.querySelector('.recommender-name').textContent;
-        openLetterModal(recommenderName, imagePath);
+        openLetterModal(recommenderName, imagePath, photoPath);
       }
     });
+
+    if (photoElement) {
+      photoElement.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const photoPath = item.getAttribute('data-recommender-photo');
+        const recommenderName = item.querySelector('.recommender-name').textContent;
+        if (photoPath) {
+          openModal(recommenderName, photoPath, null, false);
+        }
+      });
+    }
   });
 
   if (letterModalClose) {
@@ -382,6 +429,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (letterModalOverlay) {
     letterModalOverlay.addEventListener('click', closeLetterModal);
+  }
+
+  const letterModalPhoto = document.getElementById('letter-recommender-photo');
+  if (letterModalPhoto) {
+    letterModalPhoto.addEventListener('click', function() {
+      const photoSrc = this.getAttribute('src');
+      const photoAlt = this.getAttribute('alt');
+      if (photoSrc && photoSrc !== '') {
+        closeLetterModal();
+        const recommenderName = photoAlt.replace('Photo of ', '');
+        openModal(recommenderName, photoSrc, null, false);
+      }
+    });
   }
 
   document.addEventListener('keydown', function(e) {
@@ -576,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const projectModalClose = projectModal ? projectModal.querySelector('.modal-close') : null;
   const projectModalOverlay = projectModal ? projectModal.querySelector('.modal-overlay') : null;
   const projectPrevBtn = projectModal ? projectModal.querySelector('.gallery-btn.prev') : null;
-  const projectNextBtn = projectModal ? projectModal.querySelector('.gallery-btn.next') : null;
+  const projectNextBtn = projectModal ? projectModal.querySelector('.gallery-btn next') : null;
   const projectModalGithub = projectModal ? projectModal.querySelector('.project-modal-github') : null;
 
   let galleryImages = [];
@@ -684,7 +744,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function openCredential() {
       const imagePath = item.getAttribute('data-credential-image');
       if (!imagePath) return;
-      openModal(title, imagePath);
+      const iconPath = item.querySelector('.school-logo img')?.getAttribute('src');
+      openModal(title, imagePath, iconPath, false);
     }
     item.setAttribute('role', item.getAttribute('role') || 'button');
     item.setAttribute('tabindex', item.getAttribute('tabindex') || '0');

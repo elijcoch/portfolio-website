@@ -109,7 +109,7 @@
         <h3>Recommendations</h3>
         <div class="recommendations-list">
           <!-- Add recommendations/references here -->
-          <div class="recommendation-item" data-letter-image="./assets/images/recommendation.png" role="button" tabindex="0">
+          <div class="recommendation-item" data-letter-image="./assets/images/recommendation.png" data-recommender-photo="./assets/images/kim-bentley.png" role="button" tabindex="0">
             <div class="recommender-photo">
               <img src="./assets/images/kim-bentley.png" alt="Photo of Recommender Name">
             </div>
@@ -286,7 +286,10 @@
     <div class="modal-overlay"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="modal-title" class="modal-title">Certification</h3>
+        <div class="modal-header-content">
+          <img id="cert-icon" class="cert-modal-icon" src="" alt="">
+          <h3 id="modal-title" class="modal-title">Certification</h3>
+        </div>
         <div class="modal-controls">
           <button class="zoom-btn zoom-out" aria-label="Zoom out" style="display: none;">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -331,7 +334,10 @@
     <div class="modal-overlay"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="letter-modal-title" class="modal-title">Recommendation Letter</h3>
+        <div class="modal-header-content">
+          <img id="letter-recommender-photo" class="letter-recommender-photo" src="" alt="">
+          <h3 id="letter-modal-title" class="modal-title">Recommendation Letter</h3>
+        </div>
         <div class="modal-controls">
           <button class="zoom-btn zoom-out" aria-label="Zoom out" style="display: none;">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
