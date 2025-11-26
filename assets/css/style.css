@@ -1021,6 +1021,31 @@ h1, h2, h3, h4, h5 {
   gap: 16px;
 }
 
+.project-meta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.project-meta-header .project-dates {
+  margin: 0;
+}
+
+.project-type-badge-modal {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
 .project-description-text {
   font-size: 0.95rem;
   line-height: 1.7;

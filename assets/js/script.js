@@ -492,6 +492,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dates = card.getAttribute('data-dates') || '';
     const description = card.getAttribute('data-description') || card.querySelector('.project-description')?.textContent || '';
     const gallery = (card.getAttribute('data-gallery') || '').split(',').map(s => s.trim()).filter(Boolean);
+    const typeBadge = card.querySelector('.project-type-badge')?.textContent || '';
 
     const skillsContainer = projectModal.querySelector('.project-skills');
     skillsContainer.innerHTML = '';
@@ -526,6 +527,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     projectModalTitle.textContent = title;
     projectModal.querySelector('.project-dates').textContent = dates;
+    
+    const typeBadgeModal = projectModal.querySelector('.project-type-badge-modal');
+    if (typeBadgeModal) {
+      if (typeBadge) {
+        typeBadgeModal.textContent = typeBadge;
+        typeBadgeModal.style.display = '';
+      } else {
+        typeBadgeModal.style.display = 'none';
+      }
+    }
+    
     projectModal.querySelector('.project-description-text').textContent = description;
 
     galleryImages = gallery.length ? gallery : [card.querySelector('.project-media img')?.getAttribute('src')].filter(Boolean);
