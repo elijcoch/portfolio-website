@@ -3,38 +3,19 @@ document.addEventListener('DOMContentLoaded', function () {
   const contact = document.getElementById('contact-list');
 
   if (toggle && contact) {
-    function setOpen(isOpen) {
-      if (isOpen) {
-        contact.classList.add('open');
-        toggle.setAttribute('aria-expanded', 'true');
-        contact.setAttribute('aria-hidden', 'false');
-        toggle.textContent = 'Hide Contact Info';
-      } else {
-        contact.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-        contact.setAttribute('aria-hidden', 'true');
-        toggle.textContent = 'Show Contact Info';
-      }
-    }
+    const setOpen = (isOpen) => {
+      contact.classList.toggle('open', isOpen);
+      toggle.setAttribute('aria-expanded', isOpen);
+      contact.setAttribute('aria-hidden', !isOpen);
+      toggle.textContent = isOpen ? 'Hide Contact Info' : 'Show Contact Info';
+    };
 
     const mq = window.matchMedia('(max-width: 700px)');
+    const handleMq = (e) => setOpen(!e.matches);
 
-    function handleMq(e) {
-      setOpen(!e.matches);
-    }
-
-    if (mq.addEventListener) {
-      mq.addEventListener('change', handleMq);
-    } else {
-      mq.addListener(handleMq);
-    }
-
+    mq.addEventListener ? mq.addEventListener('change', handleMq) : mq.addListener(handleMq);
     handleMq(mq);
-
-    toggle.addEventListener('click', function () {
-      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-      setOpen(!isOpen);
-    });
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
   }
 
   const navLinks = document.querySelectorAll('.nav-link');
@@ -43,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
   navLinks.forEach(link => {
     link.addEventListener('click', function (e) {
       e.preventDefault();
-      
       const targetPage = this.getAttribute('data-page');
       
       navLinks.forEach(navLink => navLink.classList.remove('active'));
@@ -58,405 +38,279 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const hash = window.location.hash.substring(1);
   if (hash && document.getElementById(hash)) {
-    navLinks.forEach(link => {
-      if (link.getAttribute('data-page') === hash) {
-        link.click();
-      }
-    });
+    const linkToClick = Array.from(navLinks).find(link => link.getAttribute('data-page') === hash);
+    if (linkToClick) linkToClick.click();
   }
 
-  const modal = document.getElementById('cert-modal');
-  const modalTitle = document.getElementById('modal-title');
-  const imageViewer = document.getElementById('cert-image-viewer');
-  const modalClose = modal.querySelector('.modal-close');
-  const modalOverlay = modal.querySelector('.modal-overlay');
-  const certificationItems = document.querySelectorAll('.certification-item[data-image]');
+  const modals = {
+    cert: document.getElementById('cert-modal'),
+    letter: document.getElementById('letter-modal'),
+    project: document.getElementById('project-modal')
+  };
 
-  let certZoomLevel = 1;
-  const certZoomStep = 0.1;
-  const certMinZoom = 0.5;
-  const certMaxZoom = 3;
-
-  let certIsDragging = false;
-  let certStartX = 0;
-  let certStartY = 0;
-  let certTranslateX = 0;
-  let certTranslateY = 0;
-
-  function openModal(certName, imagePath, iconPath, isCertification) {
-    modalTitle.textContent = certName;
-    imageViewer.setAttribute('src', imagePath);
-    imageViewer.setAttribute('alt', certName + ' Certification');
-    
-    const certIcon = modal.querySelector('#cert-icon');
-    if (certIcon && iconPath) {
-      certIcon.setAttribute('src', iconPath);
-      certIcon.setAttribute('alt', certName + ' icon');
-      certIcon.style.display = 'block';
+  class ImageModal {
+    constructor(modalElement, imageViewerId) {
+      this.modal = modalElement;
+      this.imageViewer = document.getElementById(imageViewerId);
+      this.zoomLevel = 1;
+      this.translateX = 0;
+      this.translateY = 0;
+      this.isDragging = false;
+      this.startX = 0;
+      this.startY = 0;
       
-      if (isCertification) {
-        certIcon.classList.add('cert-type');
+      this.ZOOM_STEP = 0.1;
+      this.MIN_ZOOM = 0.5;
+      this.MAX_ZOOM = 3;
+
+      this.initControls();
+      this.initDragEvents();
+    }
+
+    initControls() {
+      const fullscreenBtn = this.modal.querySelector('.fullscreen-btn');
+      const zoomIn = this.modal.querySelector('.zoom-in');
+      const zoomOut = this.modal.querySelector('.zoom-out');
+      const zoomReset = this.modal.querySelector('.zoom-reset');
+
+      if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', () => {
+          const isFullscreen = this.modal.classList.toggle('fullscreen');
+          this.updateFullscreenIcon(isFullscreen);
+          this.toggleZoomButtons(isFullscreen);
+          
+          if (!isFullscreen) this.reset();
+        });
+      }
+
+      if (zoomIn) zoomIn.addEventListener('click', () => this.zoom(this.zoomLevel + this.ZOOM_STEP));
+      if (zoomOut) zoomOut.addEventListener('click', () => this.zoom(this.zoomLevel - this.ZOOM_STEP));
+      if (zoomReset) zoomReset.addEventListener('click', () => this.reset());
+    }
+
+    initDragEvents() {
+      this.imageViewer.addEventListener('mousedown', (e) => {
+        if (!this.modal.classList.contains('fullscreen')) return;
+        
+        this.isDragging = true;
+        this.startX = e.clientX - this.translateX;
+        this.startY = e.clientY - this.translateY;
+        this.imageViewer.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!this.isDragging || !this.modal.classList.contains('fullscreen')) return;
+        
+        this.translateX = e.clientX - this.startX;
+        this.translateY = e.clientY - this.startY;
+        this.updateTransform();
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (this.isDragging) {
+          this.isDragging = false;
+          if (this.modal.classList.contains('fullscreen')) {
+            this.imageViewer.style.cursor = 'grab';
+          }
+        }
+      });
+    }
+
+    zoom(newZoom) {
+      this.zoomLevel = Math.max(this.MIN_ZOOM, Math.min(this.MAX_ZOOM, newZoom));
+      this.updateTransform();
+    }
+
+    updateTransform() {
+      this.imageViewer.style.transform = `translate(${this.translateX}px, ${this.translateY}px) scale(${this.zoomLevel})`;
+    }
+
+    reset() {
+      this.zoomLevel = 1;
+      this.translateX = 0;
+      this.translateY = 0;
+      this.imageViewer.style.transform = 'scale(1)';
+      this.imageViewer.style.cursor = 'grab';
+    }
+
+    updateFullscreenIcon(isFullscreen) {
+      const fullscreenBtn = this.modal.querySelector('.fullscreen-btn');
+      const enterIcon = fullscreenBtn.querySelector('.fullscreen-icon');
+      const exitIcon = fullscreenBtn.querySelector('.exit-fullscreen-icon');
+      
+      enterIcon.style.display = isFullscreen ? 'none' : 'block';
+      exitIcon.style.display = isFullscreen ? 'block' : 'none';
+    }
+
+    toggleZoomButtons(show) {
+      const buttons = this.modal.querySelectorAll('.zoom-in, .zoom-out, .zoom-reset');
+      buttons.forEach(btn => btn.style.display = show ? 'flex' : 'none');
+    }
+
+    close() {
+      this.modal.classList.remove('active', 'fullscreen');
+      this.modal.setAttribute('aria-hidden', 'true');
+      this.imageViewer.setAttribute('src', '');
+      document.body.style.overflow = '';
+      this.reset();
+      this.updateFullscreenIcon(false);
+      this.toggleZoomButtons(false);
+    }
+  }
+
+  const certModal = new ImageModal(modals.cert, 'cert-image-viewer');
+  const letterModal = new ImageModal(modals.letter, 'letter-image-viewer');
+
+  const openModal = (certName, imagePath, iconPath, isCertification) => {
+    const modalTitle = document.getElementById('modal-title');
+    const certIcon = modals.cert.querySelector('#cert-icon');
+    
+    modalTitle.textContent = certName;
+    certModal.imageViewer.setAttribute('src', imagePath);
+    certModal.imageViewer.setAttribute('alt', `${certName} Certification`);
+    
+    if (certIcon) {
+      if (iconPath) {
+        certIcon.setAttribute('src', iconPath);
+        certIcon.setAttribute('alt', `${certName} icon`);
+        certIcon.style.display = 'block';
+        certIcon.classList.toggle('cert-type', isCertification);
       } else {
+        certIcon.style.display = 'none';
         certIcon.classList.remove('cert-type');
       }
-    } else if (certIcon) {
-      certIcon.style.display = 'none';
-      certIcon.classList.remove('cert-type');
     }
     
-    modal.classList.add('active');
-    modal.setAttribute('aria-hidden', 'false');
+    modals.cert.classList.add('active');
+    modals.cert.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    certZoomLevel = 1;
-    certTranslateX = 0;
-    certTranslateY = 0;
-    imageViewer.style.transform = 'scale(1)';
-  }
+  };
 
-  function closeModal() {
-    modal.classList.remove('active', 'fullscreen');
-    modal.setAttribute('aria-hidden', 'true');
-    imageViewer.setAttribute('src', '');
-    document.body.style.overflow = '';
-    certZoomLevel = 1;
-    certTranslateX = 0;
-    certTranslateY = 0;
-    imageViewer.style.transform = 'scale(1)';
-    imageViewer.style.cursor = 'grab';
-    updateFullscreenIcon(modal, false);
-    toggleZoomButtons(modal, false);
-  }
-
-  function updateCertZoom(newZoom) {
-    certZoomLevel = Math.max(certMinZoom, Math.min(certMaxZoom, newZoom));
-    imageViewer.style.transform = `translate(${certTranslateX}px, ${certTranslateY}px) scale(${certZoomLevel})`;
-  }
-
-  function updateFullscreenIcon(modalElement, isFullscreen) {
-    const fullscreenBtn = modalElement.querySelector('.fullscreen-btn');
-    const enterIcon = fullscreenBtn.querySelector('.fullscreen-icon');
-    const exitIcon = fullscreenBtn.querySelector('.exit-fullscreen-icon');
-    
-    if (isFullscreen) {
-      enterIcon.style.display = 'none';
-      exitIcon.style.display = 'block';
-    } else {
-      enterIcon.style.display = 'block';
-      exitIcon.style.display = 'none';
-    }
-  }
-
-  function toggleZoomButtons(modalElement, show) {
-    const zoomIn = modalElement.querySelector('.zoom-in');
-    const zoomOut = modalElement.querySelector('.zoom-out');
-    const zoomReset = modalElement.querySelector('.zoom-reset');
-    
-    const display = show ? 'flex' : 'none';
-    if (zoomIn) zoomIn.style.display = display;
-    if (zoomOut) zoomOut.style.display = display;
-    if (zoomReset) zoomReset.style.display = display;
-  }
-
-  const certFullscreenBtn = modal.querySelector('.fullscreen-btn');
-  if (certFullscreenBtn) {
-    certFullscreenBtn.addEventListener('click', function() {
-      const isFullscreen = modal.classList.toggle('fullscreen');
-      updateFullscreenIcon(modal, isFullscreen);
-      toggleZoomButtons(modal, isFullscreen);
-      
-      if (!isFullscreen) {
-        certZoomLevel = 1;
-        certTranslateX = 0;
-        certTranslateY = 0;
-        imageViewer.style.transform = 'scale(1)';
-        imageViewer.style.cursor = 'grab';
-      }
-    });
-  }
-
-  const certZoomIn = modal.querySelector('.zoom-in');
-  const certZoomOut = modal.querySelector('.zoom-out');
-  const certZoomReset = modal.querySelector('.zoom-reset');
-
-  if (certZoomIn) {
-    certZoomIn.addEventListener('click', function() {
-      updateCertZoom(certZoomLevel + certZoomStep);
-    });
-  }
-
-  if (certZoomOut) {
-    certZoomOut.addEventListener('click', function() {
-      updateCertZoom(certZoomLevel - certZoomStep);
-    });
-  }
-
-  if (certZoomReset) {
-    certZoomReset.addEventListener('click', function() {
-      certZoomLevel = 1;
-      certTranslateX = 0;
-      certTranslateY = 0;
-      imageViewer.style.transform = 'scale(1)';
-    });
-  }
-
-  imageViewer.addEventListener('mousedown', function(e) {
-    if (!modal.classList.contains('fullscreen')) return;
-    
-    certIsDragging = true;
-    certStartX = e.clientX - certTranslateX;
-    certStartY = e.clientY - certTranslateY;
-    imageViewer.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!certIsDragging || !modal.classList.contains('fullscreen')) return;
-    
-    certTranslateX = e.clientX - certStartX;
-    certTranslateY = e.clientY - certStartY;
-    imageViewer.style.transform = `translate(${certTranslateX}px, ${certTranslateY}px) scale(${certZoomLevel})`;
-  });
-
-  document.addEventListener('mouseup', function() {
-    if (certIsDragging) {
-      certIsDragging = false;
-      if (modal.classList.contains('fullscreen')) {
-        imageViewer.style.cursor = 'grab';
-      }
-    }
-  });
-
+  const certificationItems = document.querySelectorAll('.certification-item[data-image]');
   certificationItems.forEach(item => {
-    item.addEventListener('click', function() {
-      const imagePath = this.getAttribute('data-image');
-      const certName = this.querySelector('.cert-name').textContent;
-      const iconPath = this.querySelector('.cert-icon img')?.getAttribute('src');
+    const openCert = () => {
+      const imagePath = item.getAttribute('data-image');
+      const certName = item.querySelector('.cert-name').textContent;
+      const iconPath = item.querySelector('.cert-icon img')?.getAttribute('src');
       openModal(certName, imagePath, iconPath, true);
-    });
+    };
 
-    item.addEventListener('keydown', function(e) {
+    item.addEventListener('click', openCert);
+    item.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        const imagePath = this.getAttribute('data-image');
-        const certName = this.querySelector('.cert-name').textContent;
-        const iconPath = this.querySelector('.cert-icon img')?.getAttribute('src');
-        openModal(certName, imagePath, iconPath, true);
+        openCert();
       }
     });
   });
 
-  if (modalClose) {
-    modalClose.addEventListener('click', closeModal);
-  }
+  const modalClose = modals.cert.querySelector('.modal-close');
+  const modalOverlay = modals.cert.querySelector('.modal-overlay');
+  
+  if (modalClose) modalClose.addEventListener('click', () => certModal.close());
+  if (modalOverlay) modalOverlay.addEventListener('click', () => certModal.close());
 
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', closeModal);
-  }
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && modal.classList.contains('active')) {
-      closeModal();
-    }
-  });
-
-  const letterModal = document.getElementById('letter-modal');
-  const letterModalTitle = document.getElementById('letter-modal-title');
-  const letterImageViewer = document.getElementById('letter-image-viewer');
-  const letterModalClose = letterModal.querySelector('.modal-close');
-  const letterModalOverlay = letterModal.querySelector('.modal-overlay');
-  const recommendationItems = document.querySelectorAll('.recommendation-item[data-letter-image]');
-
-  let letterZoomLevel = 1;
-  const letterZoomStep = 0.1;
-  const letterMinZoom = 0.5;
-  const letterMaxZoom = 3;
-
-  let letterIsDragging = false;
-  let letterStartX = 0;
-  let letterStartY = 0;
-  let letterTranslateX = 0;
-  let letterTranslateY = 0;
-
-  function openLetterModal(recommenderName, imagePath, photoPath) {
-    letterModalTitle.textContent = 'Recommendation from ' + recommenderName;
-    letterImageViewer.setAttribute('src', imagePath);
-    letterImageViewer.setAttribute('alt', recommenderName + ' Recommendation Letter');
+  const openLetterModal = (recommenderName, imagePath, photoPath) => {
+    const letterModalTitle = document.getElementById('letter-modal-title');
+    const recommenderPhoto = modals.letter.querySelector('#letter-recommender-photo');
     
-    const recommenderPhoto = letterModal.querySelector('#letter-recommender-photo');
-    if (recommenderPhoto && photoPath) {
-      recommenderPhoto.setAttribute('src', photoPath);
-      recommenderPhoto.setAttribute('alt', 'Photo of ' + recommenderName);
-      recommenderPhoto.style.display = 'block';
-    } else if (recommenderPhoto) {
-      recommenderPhoto.style.display = 'none';
+    letterModalTitle.textContent = `Recommendation from ${recommenderName}`;
+    letterModal.imageViewer.setAttribute('src', imagePath);
+    letterModal.imageViewer.setAttribute('alt', `${recommenderName} Recommendation Letter`);
+    
+    if (recommenderPhoto) {
+      if (photoPath) {
+        recommenderPhoto.setAttribute('src', photoPath);
+        recommenderPhoto.setAttribute('alt', `Photo of ${recommenderName}`);
+        recommenderPhoto.style.display = 'block';
+      } else {
+        recommenderPhoto.style.display = 'none';
+      }
     }
     
-    letterModal.classList.add('active');
-    letterModal.setAttribute('aria-hidden', 'false');
+    modals.letter.classList.add('active');
+    modals.letter.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    letterZoomLevel = 1;
-    letterTranslateX = 0;
-    letterTranslateY = 0;
-    letterImageViewer.style.transform = 'scale(1)';
-  }
+  };
 
-  function closeLetterModal() {
-    letterModal.classList.remove('active', 'fullscreen');
-    letterModal.setAttribute('aria-hidden', 'true');
-    letterImageViewer.setAttribute('src', '');
-    document.body.style.overflow = '';
-    letterZoomLevel = 1;
-    letterTranslateX = 0;
-    letterTranslateY = 0;
-    letterImageViewer.style.transform = 'scale(1)';
-    letterImageViewer.style.cursor = 'grab';
-    updateFullscreenIcon(letterModal, false);
-    toggleZoomButtons(letterModal, false);
-  }
-
-  function updateLetterZoom(newZoom) {
-    letterZoomLevel = Math.max(letterMinZoom, Math.min(letterMaxZoom, newZoom));
-    letterImageViewer.style.transform = `translate(${letterTranslateX}px, ${letterTranslateY}px) scale(${letterZoomLevel})`;
-  }
-
-  const letterFullscreenBtn = letterModal.querySelector('.fullscreen-btn');
-  if (letterFullscreenBtn) {
-    letterFullscreenBtn.addEventListener('click', function() {
-      const isFullscreen = letterModal.classList.toggle('fullscreen');
-      updateFullscreenIcon(letterModal, isFullscreen);
-      toggleZoomButtons(letterModal, isFullscreen);
-      
-      if (!isFullscreen) {
-        letterZoomLevel = 1;
-        letterTranslateX = 0;
-        letterTranslateY = 0;
-        letterImageViewer.style.transform = 'scale(1)';
-        letterImageViewer.style.cursor = 'grab';
-      }
-    });
-  }
-
-  const letterZoomIn = letterModal.querySelector('.zoom-in');
-  const letterZoomOut = letterModal.querySelector('.zoom-out');
-  const letterZoomReset = letterModal.querySelector('.zoom-reset');
-
-  if (letterZoomIn) {
-    letterZoomIn.addEventListener('click', function() {
-      updateLetterZoom(letterZoomLevel + letterZoomStep);
-    });
-  }
-
-  if (letterZoomOut) {
-    letterZoomOut.addEventListener('click', function() {
-      updateLetterZoom(letterZoomLevel - letterZoomStep);
-    });
-  }
-
-  if (letterZoomReset) {
-    letterZoomReset.addEventListener('click', function() {
-      letterZoomLevel = 1;
-      letterTranslateX = 0;
-      letterTranslateY = 0;
-      letterImageViewer.style.transform = 'scale(1)';
-    });
-  }
-
-  letterImageViewer.addEventListener('mousedown', function(e) {
-    if (!letterModal.classList.contains('fullscreen')) return;
-    
-    letterIsDragging = true;
-    letterStartX = e.clientX - letterTranslateX;
-    letterStartY = e.clientY - letterTranslateY;
-    letterImageViewer.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!letterIsDragging || !letterModal.classList.contains('fullscreen')) return;
-    
-    letterTranslateX = e.clientX - letterStartX;
-    letterTranslateY = e.clientY - letterStartY;
-    letterImageViewer.style.transform = `translate(${letterTranslateX}px, ${letterTranslateY}px) scale(${letterZoomLevel})`;
-  });
-
-  document.addEventListener('mouseup', function() {
-    if (letterIsDragging) {
-      letterIsDragging = false;
-      if (letterModal.classList.contains('fullscreen')) {
-        letterImageViewer.style.cursor = 'grab';
-      }
-    }
-  });
-
+  const recommendationItems = document.querySelectorAll('.recommendation-item[data-letter-image]');
   recommendationItems.forEach(item => {
     const photoElement = item.querySelector('.recommender-photo');
     
-    item.addEventListener('click', function(e) {
-      if (e.target.closest('.recommender-photo')) {
-        return;
+    item.addEventListener('click', (e) => {
+      if (!e.target.closest('.recommender-photo')) {
+        const imagePath = item.getAttribute('data-letter-image');
+        const photoPath = item.getAttribute('data-recommender-photo');
+        const recommenderName = item.querySelector('.recommender-name').textContent;
+        openLetterModal(recommenderName, imagePath, photoPath);
       }
-      const imagePath = this.getAttribute('data-letter-image');
-      const photoPath = this.getAttribute('data-recommender-photo');
-      const recommenderName = this.querySelector('.recommender-name').textContent;
-      openLetterModal(recommenderName, imagePath, photoPath);
     });
 
-    item.addEventListener('keydown', function(e) {
+    item.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        const imagePath = this.getAttribute('data-letter-image');
-        const photoPath = this.getAttribute('data-recommender-photo');
-        const recommenderName = this.querySelector('.recommender-name').textContent;
+        const imagePath = item.getAttribute('data-letter-image');
+        const photoPath = item.getAttribute('data-recommender-photo');
+        const recommenderName = item.querySelector('.recommender-name').textContent;
         openLetterModal(recommenderName, imagePath, photoPath);
       }
     });
 
     if (photoElement) {
-      photoElement.addEventListener('click', function(e) {
+      photoElement.addEventListener('click', (e) => {
         e.stopPropagation();
         const photoPath = item.getAttribute('data-recommender-photo');
         const recommenderName = item.querySelector('.recommender-name').textContent;
-        if (photoPath) {
-          openModal(recommenderName, photoPath, null, false);
-        }
+        if (photoPath) openModal(recommenderName, photoPath, null, false);
       });
     }
   });
 
-  if (letterModalClose) {
-    letterModalClose.addEventListener('click', closeLetterModal);
-  }
-
-  if (letterModalOverlay) {
-    letterModalOverlay.addEventListener('click', closeLetterModal);
-  }
+  const letterModalClose = modals.letter.querySelector('.modal-close');
+  const letterModalOverlay = modals.letter.querySelector('.modal-overlay');
+  
+  if (letterModalClose) letterModalClose.addEventListener('click', () => letterModal.close());
+  if (letterModalOverlay) letterModalOverlay.addEventListener('click', () => letterModal.close());
 
   const letterModalPhoto = document.getElementById('letter-recommender-photo');
   if (letterModalPhoto) {
     letterModalPhoto.addEventListener('click', function() {
       const photoSrc = this.getAttribute('src');
       const photoAlt = this.getAttribute('alt');
-      if (photoSrc && photoSrc !== '') {
-        closeLetterModal();
+      if (photoSrc) {
+        letterModal.close();
         const recommenderName = photoAlt.replace('Photo of ', '');
         openModal(recommenderName, photoSrc, null, false);
       }
     });
   }
 
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      if (modal.classList.contains('active')) {
-        closeModal();
-      } else if (letterModal.classList.contains('active')) {
-        closeLetterModal();
-      } else if (projectModal && projectModal.classList.contains('active')) {
-        closeProjectModal();
+  const educationCredentialItems = document.querySelectorAll('.education-item[data-credential-image]');
+  educationCredentialItems.forEach(item => {
+    const degreeEl = item.querySelector('.degree');
+    const title = degreeEl ? degreeEl.textContent : 'Credential';
+    
+    const openCredential = () => {
+      const imagePath = item.getAttribute('data-credential-image');
+      if (imagePath) {
+        const iconPath = item.querySelector('.school-logo img')?.getAttribute('src');
+        openModal(title, imagePath, iconPath, false);
       }
-    }
+    };
+    
+    item.setAttribute('role', item.getAttribute('role') || 'button');
+    item.setAttribute('tabindex', item.getAttribute('tabindex') || '0');
+    item.addEventListener('click', openCredential);
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openCredential();
+      }
+    });
   });
 
-  function initCarousel(section) {
+  const initCarousel = (section) => {
     const grid = section.querySelector('.projects-carousel .projects-grid');
     const prevBtn = section.querySelector('.carousel-btn.prev');
     const nextBtn = section.querySelector('.carousel-btn.next');
@@ -464,49 +318,38 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!grid || !prevBtn || !nextBtn) return;
 
     let index = 0;
-    function cards() { return Array.from(grid.querySelectorAll('.project-card')).filter(c => c.style.display !== 'none'); }
+    const getVisibleCards = () => Array.from(grid.querySelectorAll('.project-card')).filter(c => c.style.display !== 'none');
 
-    function buildDots(visibleCards) {
-      if (!dotsContainer) return; 
-      dotsContainer.innerHTML='';
+    const buildDots = (visibleCards) => {
+      if (!dotsContainer) return;
+      dotsContainer.innerHTML = '';
       visibleCards.forEach((_, i) => {
         const btn = document.createElement('button');
-        btn.type='button';
-        btn.className='carousel-dot' + (i===index?' active':'');
-        btn.setAttribute('aria-label','Go to slide ' + (i+1));
-        btn.addEventListener('click',()=>{ index=i; update(); });
+        btn.type = 'button';
+        btn.className = `carousel-dot${i === index ? ' active' : ''}`;
+        btn.setAttribute('aria-label', `Go to slide ${i + 1}`);
+        btn.addEventListener('click', () => { index = i; update(); });
         dotsContainer.appendChild(btn);
       });
-    }
+    };
 
-    function update() {
-      const visibleCards = cards();
+    const update = () => {
+      const visibleCards = getVisibleCards();
       const total = visibleCards.length;
       const carousel = section.querySelector('.projects-carousel');
+      const isMobile = window.matchMedia('(max-width: 700px)').matches;
 
-      // Hide controls when no cards
-      if (total === 0) {
+      if (total === 0 || !isMobile) {
         prevBtn.classList.add('hidden');
         nextBtn.classList.add('hidden');
         if (dotsContainer) {
           dotsContainer.classList.add('hidden');
           dotsContainer.innerHTML = '';
         }
-        if (carousel) carousel.style.paddingBottom = '0px';
-        return;
-      }
-
-      const isMobile = window.matchMedia('(max-width: 700px)').matches;
-
-      if (!isMobile) {
-        index = 0;
-        grid.style.transform = '';
-        if (carousel) carousel.style.paddingBottom = '';
-        prevBtn.classList.add('hidden');
-        nextBtn.classList.add('hidden');
-        if (dotsContainer) {
-          dotsContainer.classList.add('hidden');
-          dotsContainer.innerHTML = '';
+        if (carousel) carousel.style.paddingBottom = total === 0 || !isMobile ? '0px' : '';
+        if (!isMobile) {
+          index = 0;
+          grid.style.transform = '';
         }
         return;
       }
@@ -523,35 +366,34 @@ document.addEventListener('DOMContentLoaded', function () {
         if (carousel) carousel.style.paddingBottom = '';
       }
 
-      if (index < 0) index = total - 1;
-      if (index >= total) index = 0;
+      index = ((index % total) + total) % total;
 
       const targetCard = visibleCards[index];
-      const targetLeft = targetCard.offsetLeft;
-      grid.scrollTo({ left: targetLeft, behavior: 'smooth' });
+      grid.scrollTo({ left: targetCard.offsetLeft, behavior: 'smooth' });
 
       if (total > 1) buildDots(visibleCards);
       if (dotsContainer) {
-        const allDots = dotsContainer.querySelectorAll('.carousel-dot');
-        allDots.forEach((d,i)=> d.classList.toggle('active', i===index));
+        dotsContainer.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === index));
       }
-    }
+    };
 
     prevBtn.addEventListener('click', () => { if (window.matchMedia('(max-width: 700px)').matches) { index--; update(); } });
     nextBtn.addEventListener('click', () => { if (window.matchMedia('(max-width: 700px)').matches) { index++; update(); } });
 
-    let startX = 0; let isDown = false; let delta = 0;
-    grid.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDown = true; delta = 0; }, {passive:true});
-    grid.addEventListener('touchmove', e => { if(!isDown) return; delta = e.touches[0].clientX - startX; }, {passive:true});
+    let startX = 0, isDown = false, delta = 0;
+    grid.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDown = true; delta = 0; }, { passive: true });
+    grid.addEventListener('touchmove', e => { if (isDown) delta = e.touches[0].clientX - startX; }, { passive: true });
     grid.addEventListener('touchend', () => {
-      if (!isDown) return; isDown = false;
-      if (Math.abs(delta) > 50) { index += delta < 0 ? 1 : -1; update(); }
+      if (isDown) {
+        isDown = false;
+        if (Math.abs(delta) > 50) { index += delta < 0 ? 1 : -1; update(); }
+      }
     });
 
     window.addEventListener('resize', update);
     update();
     return update;
-  }
+  };
 
   const carouselUpdaters = new Map();
   document.querySelectorAll('.project-section').forEach(section => {
@@ -563,27 +405,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttons = section.querySelectorAll('.portfolio-filter');
     const cards = section.querySelectorAll('.project-card');
     const emptyMsg = section.querySelector('.no-projects-message');
-    function applySectionFilter(category) {
+    
+    const applySectionFilter = (category) => {
       let visibleCount = 0;
       cards.forEach(card => {
-        const cat = card.getAttribute('data-category');
-        const show = category === 'all' || cat === category;
+        const show = category === 'all' || card.getAttribute('data-category') === category;
         card.style.display = show ? 'flex' : 'none';
-        card.setAttribute('aria-hidden', show ? 'false' : 'true');
+        card.setAttribute('aria-hidden', !show);
         if (show) visibleCount++;
       });
       if (emptyMsg) emptyMsg.hidden = visibleCount !== 0;
       const updater = carouselUpdaters.get(section);
       if (updater) updater();
-    }
+    };
+    
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        buttons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+        buttons.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
         btn.classList.add('active');
-        btn.setAttribute('aria-selected','true');
+        btn.setAttribute('aria-selected', 'true');
         applySectionFilter(btn.getAttribute('data-filter'));
       });
     });
+    
     applySectionFilter('all');
   });
   
@@ -591,15 +438,13 @@ document.addEventListener('DOMContentLoaded', function () {
   let navbarTop = 0;
   let spacer = null;
 
-  function updateNavbarTop() {
-    if (!navbar) return;
-    const rect = navbar.getBoundingClientRect();
-    navbarTop = window.pageYOffset + rect.top;
-  }
+  const updateNavbarTop = () => {
+    if (navbar) navbarTop = window.pageYOffset + navbar.getBoundingClientRect().top;
+  };
 
-  function handleStickyNavbar() {
-    const isMobile = window.matchMedia('(max-width: 700px)').matches;
+  const handleStickyNavbar = () => {
     if (!navbar) return;
+    const isMobile = window.matchMedia('(max-width: 700px)').matches;
 
     if (!isMobile) {
       navbar.classList.remove('sticky');
@@ -613,37 +458,36 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!spacer) {
           spacer = document.createElement('div');
           spacer.className = 'navbar-spacer';
-          spacer.style.height = navbar.offsetHeight + 'px';
           navbar.parentNode.insertBefore(spacer, navbar.nextSibling);
-        } else {
-          spacer.style.height = navbar.offsetHeight + 'px';
         }
+        spacer.style.height = `${navbar.offsetHeight}px`;
       }
     } else {
       navbar.classList.remove('sticky');
       if (spacer) { spacer.remove(); spacer = null; }
     }
-  }
+  };
 
   updateNavbarTop();
   handleStickyNavbar();
   window.addEventListener('scroll', handleStickyNavbar, { passive: true });
   window.addEventListener('resize', () => { updateNavbarTop(); handleStickyNavbar(); });
 
-  const projectModal = document.getElementById('project-modal');
+  const projectModal = modals.project;
   const projectModalTitle = document.getElementById('project-modal-title');
   const projectGalleryImage = document.getElementById('project-gallery-image');
-  const projectModalClose = projectModal ? projectModal.querySelector('.modal-close') : null;
-  const projectModalOverlay = projectModal ? projectModal.querySelector('.modal-overlay') : null;
-  const projectPrevBtn = projectModal ? projectModal.querySelector('.gallery-btn.prev') : null;
-  const projectNextBtn = projectModal ? projectModal.querySelector('.gallery-btn next') : null;
-  const projectModalGithub = projectModal ? projectModal.querySelector('.project-modal-github') : null;
+  const projectModalClose = projectModal?.querySelector('.modal-close');
+  const projectModalOverlay = projectModal?.querySelector('.modal-overlay');
+  const projectPrevBtn = projectModal?.querySelector('.gallery-btn.prev');
+  const projectNextBtn = projectModal?.querySelector('.gallery-btn.next');
+  const projectModalGithub = projectModal?.querySelector('.project-modal-github');
 
   let galleryImages = [];
   let galleryIndex = 0;
 
-  function openProjectModal(card) {
+  const openProjectModal = (card) => {
     if (!projectModal) return;
+    
     const title = card.getAttribute('data-title') || card.querySelector('.project-title')?.textContent || 'Project';
     const dates = card.getAttribute('data-dates') || '';
     const description = card.getAttribute('data-description') || card.querySelector('.project-description')?.textContent || '';
@@ -651,8 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const skillsContainer = projectModal.querySelector('.project-skills');
     skillsContainer.innerHTML = '';
-    const tags = card.querySelectorAll('.project-tags li');
-    tags.forEach(tag => {
+    card.querySelectorAll('.project-tags li').forEach(tag => {
       const skillName = tag.getAttribute('data-skill') || tag.textContent.trim();
       const detail = tag.getAttribute('data-skill-detail') || '';
       const detailsEl = document.createElement('details');
@@ -668,10 +511,9 @@ document.addEventListener('DOMContentLoaded', function () {
       skillsContainer.appendChild(detailsEl);
     });
 
-    // Set GitHub repo link in modal if available on card
     if (projectModalGithub) {
       const cardRepoEl = card.querySelector('.project-github');
-      const repoHref = cardRepoEl ? cardRepoEl.getAttribute('href') : '';
+      const repoHref = cardRepoEl?.getAttribute('href') || '';
       if (repoHref) {
         projectModalGithub.href = repoHref;
         projectModalGithub.removeAttribute('hidden');
@@ -693,9 +535,9 @@ document.addEventListener('DOMContentLoaded', function () {
     projectModal.classList.add('active');
     projectModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-  }
+  };
 
-  function closeProjectModal() {
+  const closeProjectModal = () => {
     if (!projectModal) return;
     projectModal.classList.remove('active');
     projectModal.setAttribute('aria-hidden', 'true');
@@ -703,31 +545,35 @@ document.addEventListener('DOMContentLoaded', function () {
     projectGalleryImage.setAttribute('src', '');
     galleryImages = [];
     galleryIndex = 0;
-  }
+  };
 
-  function updateProjectGallery() {
+  const updateProjectGallery = () => {
     if (!projectGalleryImage || !galleryImages.length) return;
-    const src = galleryImages[galleryIndex];
-    projectGalleryImage.setAttribute('src', src);
-    projectGalleryImage.setAttribute('alt', projectModalTitle.textContent + ' image ' + (galleryIndex + 1));
-  }
+    projectGalleryImage.setAttribute('src', galleryImages[galleryIndex]);
+    projectGalleryImage.setAttribute('alt', `${projectModalTitle.textContent} image ${galleryIndex + 1}`);
+  };
 
-  function nextImage() {
-    if (!galleryImages.length) return;
-    galleryIndex = (galleryIndex + 1) % galleryImages.length;
-    updateProjectGallery();
-  }
+  const nextImage = () => {
+    if (galleryImages.length) {
+      galleryIndex = (galleryIndex + 1) % galleryImages.length;
+      updateProjectGallery();
+    }
+  };
   
-  function prevImage() {
-    if (!galleryImages.length) return;
-    galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
-    updateProjectGallery();
-  }
+  const prevImage = () => {
+    if (galleryImages.length) {
+      galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+      updateProjectGallery();
+    }
+  };
 
   document.querySelectorAll('.project-card').forEach(card => {
     card.addEventListener('click', () => openProjectModal(card));
     card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProjectModal(card); }
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openProjectModal(card);
+      }
     });
   });
 
@@ -736,22 +582,11 @@ document.addEventListener('DOMContentLoaded', function () {
   if (projectNextBtn) projectNextBtn.addEventListener('click', nextImage);
   if (projectPrevBtn) projectPrevBtn.addEventListener('click', prevImage);
 
-  // Reuse certification modal for education credentials
-  const educationCredentialItems = document.querySelectorAll('.education-item[data-credential-image]');
-  educationCredentialItems.forEach(item => {
-    const degreeEl = item.querySelector('.degree');
-    const title = degreeEl ? degreeEl.textContent : 'Credential';
-    function openCredential() {
-      const imagePath = item.getAttribute('data-credential-image');
-      if (!imagePath) return;
-      const iconPath = item.querySelector('.school-logo img')?.getAttribute('src');
-      openModal(title, imagePath, iconPath, false);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (modals.cert.classList.contains('active')) certModal.close();
+      else if (modals.letter.classList.contains('active')) letterModal.close();
+      else if (projectModal?.classList.contains('active')) closeProjectModal();
     }
-    item.setAttribute('role', item.getAttribute('role') || 'button');
-    item.setAttribute('tabindex', item.getAttribute('tabindex') || '0');
-    item.addEventListener('click', openCredential);
-    item.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCredential(); }
-    });
   });
 });
