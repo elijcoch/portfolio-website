@@ -875,10 +875,11 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 
 .project-gallery img { 
   max-width: 100%; 
-  max-height: 50vh; 
+  max-height: 60vh; 
   width: auto; 
   height: auto; 
-  border-radius: 8px; 
+  display: block;
+  margin: 0 auto;
   object-fit: contain; 
 }
 
@@ -1251,5 +1252,24 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 
 #letter-modal .modal-body {
   overflow: hidden;
+}
+
+.project-gallery {
+  min-height: unset;
+  height: auto;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #141414;
+}
+.project-gallery img {
+  max-width: 100%;
+  max-height: 60vh;
+  width: auto;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
 }
 
