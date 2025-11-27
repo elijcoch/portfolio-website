@@ -440,7 +440,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (projectImageModal) { projectImageModal.reset(); projectImageModal.updateFullscreenIcon(false); projectImageModal.toggleZoomButtons(false); }
     const title = card.getAttribute('data-title') || card.querySelector('.project-title')?.textContent || 'Project';
     const dates = card.getAttribute('data-dates') || '';
-    const description = card.getAttribute('data-description') || card.querySelector('.project-description')?.textContent || '';
+    // Prefer the visible card description; fall back to data attribute
+    const description = card.querySelector('.project-description')?.textContent?.trim() || card.getAttribute('data-description') || '';
     const gallery = (card.getAttribute('data-gallery') || '').split(',').map(s => s.trim()).filter(Boolean);
     const typeBadge = card.querySelector('.project-type-badge')?.textContent || '';
     const skillsContainer = projectModal.querySelector('.project-skills'); skillsContainer.innerHTML = '';
