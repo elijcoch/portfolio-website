@@ -20,12 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const mq = window.matchMedia('(max-width: 700px)');
 
-    // Helper to check if contact and footer overlap
     const isOverlappingFooter = () => {
       if (!contact.classList.contains('open')) return false;
       const contactRect = contact.getBoundingClientRect();
       const footerRect = footer.getBoundingClientRect();
-      // Check if contact's bottom is below footer's top
       return contactRect.bottom > footerRect.top;
     };
 
@@ -225,7 +223,6 @@ document.addEventListener('DOMContentLoaded', function () {
   if (modalClose) modalClose.addEventListener('click', () => certModal.close());
   if (modalOverlay) modalOverlay.addEventListener('click', () => certModal.close());
 
-  // Recommendation letter items now use cert-modal
   const recommendationItems = document.querySelectorAll('.recommendation-item[data-letter-image]');
   recommendationItems.forEach(item => {
     const openLetter = () => {
@@ -234,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const recommenderName = item.getAttribute('data-recommender-name') || item.querySelector('.recommender-name')?.textContent || '';
       const relationship = item.getAttribute('data-recommender-relationship') || item.querySelector('.recommender-relationship')?.textContent || '';
       const date = item.getAttribute('data-recommendation-date') || item.querySelector('.recommendation-date')?.textContent || '';
-      // Use cert-modal for recommendation letter
       const modalTitle = document.getElementById('modal-title');
       const modalIssuer = document.getElementById('modal-issuer');
       const modalDate = document.getElementById('modal-date');

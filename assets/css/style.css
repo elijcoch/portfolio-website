@@ -27,23 +27,18 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 .sidebar::-webkit-scrollbar { width: 0; height: 0; }
 .sidebar::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-track { background: transparent; }
 
-
 @media (min-width: 701px) {
   .sidebar.sidebar-compact { padding: 24px 16px; }
   .sidebar.sidebar-compact .headshot img { width: 160px; height: 160px; }
   .sidebar.sidebar-compact .contact-toggle { display: block; }
   .sidebar.sidebar-compact .contact { display: none; width: 100%; }
   .sidebar.sidebar-compact .contact.open { display: block; }
-
   .sidebar.sidebar-compact .sidebar-footer { position: static; bottom: auto; }
-
   .sidebar.sidebar-compact.sidebar-scroll { overflow-y: auto; scrollbar-width: thin; }
   .sidebar.sidebar-compact.sidebar-scroll::-webkit-scrollbar { width: 8px; }
   .sidebar.sidebar-compact.sidebar-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
   .sidebar.sidebar-compact.sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
   .sidebar.sidebar-compact.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
-
-
   .sidebar.sidebar-compact.sidebar-scroll .sidebar-footer { position: static; bottom: auto; margin-top: 24px; }
 }
 
@@ -431,7 +426,6 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-color);
-  /* Reserve space so absolute-positioned controls don't overlap title */
   padding-right: 120px;
 }
 
@@ -481,7 +475,6 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   transition: all 0.2s ease;
 }
 
-/* Make recommender photo in letter modal match icon size */
 .letter-recommender-photo { width: 80px; height: 80px; }
 
 .cert-modal-icon {
@@ -528,7 +521,6 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   display: flex;
   align-items: center;
   gap: 8px;
-  /* Move controls to top-right corner of modal */
   position: absolute;
   top: 8px;
   right: 8px;
@@ -1219,7 +1211,6 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   .site-footer p { font-size: 0.8rem; }
 }
 
-/* Status badge for education and certification cards */
 .status-badge {
   position: absolute;
   top: 8px;
@@ -1260,6 +1251,5 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 
 #letter-modal .modal-body {
   overflow: hidden;
-  /* Remove scrollbars and scrolling for the recommendation letter modal */
 }
 
