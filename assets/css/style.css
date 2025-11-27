@@ -774,6 +774,17 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 .project-github svg,
 .project-modal-github svg { width: 18px; height: 18px; display: block; }
 
+/* Ensure image-based GitHub icons match SVG icons (make them white) */
+.project-github img,
+.project-modal-github img,
+.social-link.github img,
+.project-modal .project-modal-github img {
+  width: 18px;
+  height: 18px;
+  display: block;
+  filter: brightness(0) invert(1);
+}
+
 .project-skill {
   background: rgba(255,255,255,0.06);
   border: 1px solid var(--border-color);
