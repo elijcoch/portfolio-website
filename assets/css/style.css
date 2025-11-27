@@ -856,7 +856,8 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   align-items: flex-start; 
   justify-content: center; 
   min-height: 450px; 
-  padding: 20px; 
+  max-height: 600px;
+  padding: 20px;
   width: 100%; 
 }
 
@@ -919,19 +920,21 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 /* Unify gallery sizing across images */
 .project-gallery {
   height: 60vh;
-  min-height: 350px;
+  min-height: 450px;
+  max-height: 600px;
   padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .project-gallery img {
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
 }
 
-/* Ensure fullscreen fills the viewport under the header area */
 .modal.fullscreen .project-gallery {
   height: calc(100vh - 80px);
   padding: 0;
@@ -1306,9 +1309,10 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 }
 
 .project-gallery {
-  min-height: unset;
-  height: auto;
-  padding: 8px;
+  min-height: 450px;
+  max-height: 600px;
+  height: 60vh;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1316,68 +1320,10 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 }
 .project-gallery img {
   max-width: 100%;
-  max-height: 60vh;
+  max-height: 100%;
   width: auto;
   height: auto;
   display: block;
   margin: 0 auto;
   object-fit: contain;
-}
-
-.modal.fullscreen .modal-controls {
-  top: 8px;
-  right: 56px;
-  left: auto;
-  width: auto;
-  justify-content: flex-start;
-  gap: 8px;
-  flex-wrap: nowrap;
-}
-
-@media (min-width: 701px) {
-  .modal-header .modal-controls { right: 56px; }
-}
-
-.modal-close,
-button.modal-close,
-.modal .modal-close,
-button[aria-label^="Close"],
-button[aria-label*="close" i],
-button[aria-label*="Close" i] {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-.modal-close:hover,
-.modal-close:focus,
-button[aria-label^="Close"]:hover,
-button[aria-label^="Close"]:focus,
-button[aria-label*="close" i]:hover,
-button[aria-label*="close" i]:focus {
-  background: transparent !important;
-  border: none !important;
-  color: var(--text-primary) !important;
-  outline: none !important;
-}
-
-/* Ensure different size variants remain presentational but without background/border */
-.modal-close[style],
-.modal-close[aria-hidden],
-.modal .modal-close[style] {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Mobile-specific override */
-@media (max-width: 700px) {
-  .modal-close,
-  button[aria-label^="Close"],
-  button[aria-label*="close" i] {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
 }
