@@ -231,6 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const recommenderName = item.getAttribute('data-recommender-name') || item.querySelector('.recommender-name')?.textContent || '';
       const relationship = item.getAttribute('data-recommender-relationship') || item.querySelector('.recommender-relationship')?.textContent || '';
       const date = item.getAttribute('data-recommendation-date') || item.querySelector('.recommendation-date')?.textContent || '';
+      const recommenderUrl = item.getAttribute('data-recommender-url') || '';
       const modalTitle = document.getElementById('modal-title');
       const modalIssuer = document.getElementById('modal-issuer');
       const modalDate = document.getElementById('modal-date');
@@ -247,8 +248,8 @@ document.addEventListener('DOMContentLoaded', function () {
           certIcon.style.display = 'block';
           certIcon.classList.remove('cert-type');
           certIcon.classList.add('recommender-photo');
-          certIcon.onclick = null;
-          certIcon.style.cursor = '';
+          certIcon.style.cursor = recommenderUrl ? 'pointer' : '';
+          certIcon.onclick = recommenderUrl ? () => window.open(recommenderUrl, '_blank', 'noopener') : null;
         } else {
           certIcon.style.display = 'none';
           certIcon.classList.remove('cert-type', 'recommender-photo');
@@ -262,6 +263,14 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     item.addEventListener('click', openLetter);
     item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLetter(); } });
+
+    const recommenderPhotoEl = item.querySelector('.recommender-photo');
+    const recommenderUrl = item.getAttribute('data-recommender-url');
+    if (recommenderPhotoEl && recommenderUrl) {
+      recommenderPhotoEl.style.cursor = 'pointer';
+      recommenderPhotoEl.addEventListener('click', (e) => { e.stopPropagation(); window.open(recommenderUrl, '_blank', 'noopener'); });
+      recommenderPhotoEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); window.open(recommenderUrl, '_blank', 'noopener'); } });
+    }
   });
 
   const educationCredentialItems = document.querySelectorAll('.education-item[data-credential-image]');

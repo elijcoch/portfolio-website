@@ -201,9 +201,11 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   object-fit: contain;
   display: block;
 }
+
 .cert-modal-icon.recommender-photo {
   border-radius: 50%;
   object-fit: cover;
+  padding: 0;
 }
 
 .cert-modal-icon img {
@@ -222,6 +224,21 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 .cert-icon img {
   filter: brightness(0) invert(1);
   opacity: 0.9;
+}
+
+.cert-modal-icon.cert-type {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+.cert-modal-icon.cert-type img {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+.cert-modal-icon.recommender-photo:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .cert-content,
@@ -485,15 +502,29 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   object-fit: contain;
   display: block;
 }
+
 .cert-modal-icon.recommender-photo {
   border-radius: 50%;
   object-fit: cover;
+  padding: 0;
 }
 
 .cert-modal-icon img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.cert-icon img,
+.school-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cert-icon img {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
 }
 
 .cert-modal-icon.cert-type {
@@ -509,6 +540,15 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 .letter-recommender-photo:hover {
   border-color: rgba(255, 255, 255, 0.3);
   transform: scale(1.1);
+}
+
+.cert-modal-icon:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.cert-modal-icon.recommender-photo:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .modal-title {
