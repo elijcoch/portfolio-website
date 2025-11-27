@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const zoomIn = this.modal.querySelector('.zoom-in');
       const zoomOut = this.modal.querySelector('.zoom-out');
       const zoomReset = this.modal.querySelector('.zoom-reset');
-      // cache elements for grouping
-      this.controlsContainer = this.modal.querySelector('.modal-header .modal-controls');
+      // cache elements for grouping - try both locations for backwards compatibility
+      this.controlsContainer = this.modal.querySelector('.cert-image-controls') || this.modal.querySelector('.project-gallery-controls') || this.modal.querySelector('.modal-header .modal-controls');
       this.closeBtn = this.modal.querySelector('.modal-header .modal-close');
       this.headerEl = this.modal.querySelector('.modal-header');
 
@@ -123,8 +123,17 @@ document.addEventListener('DOMContentLoaded', function () {
             this.translateX = 0;
             this.translateY = 0;
             this.updateTransform();
+            // Update header height for controls positioning
+            this.updateHeaderHeight();
+            // Listen for resize to update header height dynamically
+            window.addEventListener('resize', this.boundUpdateHeaderHeight = () => this.updateHeaderHeight());
           } else {
             this.reset();
+            // Remove resize listener when exiting fullscreen
+            if (this.boundUpdateHeaderHeight) {
+              window.removeEventListener('resize', this.boundUpdateHeaderHeight);
+              this.boundUpdateHeaderHeight = null;
+            }
           }
         });
       }
@@ -144,7 +153,10 @@ document.addEventListener('DOMContentLoaded', function () {
     updateControlGrouping(isFullscreen) {
       if (!this.controlsContainer || !this.closeBtn) return;
       const isDesktop = window.matchMedia('(min-width: 701px)').matches;
-      if (isFullscreen && isDesktop) {
+      // Only apply grouping logic if controls are in the header (for project modal)
+      const isHeaderControls = this.controlsContainer.classList.contains('modal-controls');
+      
+      if (isFullscreen && isDesktop && isHeaderControls) {
         if (this.closeBtn.parentElement !== this.controlsContainer) {
           this.controlsContainer.appendChild(this.closeBtn);
         }
@@ -165,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
           fontSize: '1.75rem',
           color: 'var(--text-secondary)'
         });
-      } else {
+      } else if (isHeaderControls) {
         // restore close button outside and default styles
         if (this.closeBtn.parentElement === this.controlsContainer) {
           this.headerEl.appendChild(this.closeBtn);
@@ -189,6 +201,8 @@ document.addEventListener('DOMContentLoaded', function () {
           fontSize: '2rem'
         });
       }
+      // For image-overlay controls (cert-image-controls, project-gallery-controls), 
+      // no special grouping is needed - they stay in place
     }
 
     initDragEvents() {
@@ -221,6 +235,12 @@ document.addEventListener('DOMContentLoaded', function () {
     zoom(newZoom) { this.zoomLevel = Math.max(this.MIN_ZOOM, Math.min(this.MAX_ZOOM, newZoom)); this.updateTransform(); }
     updateTransform() { this.imageViewer.style.transform = `translate(${this.translateX}px, ${this.translateY}px) scale(${this.zoomLevel})`; }
     reset() { this.zoomLevel = 1; this.translateX = 0; this.translateY = 0; this.imageViewer.style.transform = 'scale(1)'; this.imageViewer.style.cursor = 'grab'; }
+    updateHeaderHeight() {
+      if (this.modal.classList.contains('fullscreen') && this.headerEl) {
+        const headerHeight = this.headerEl.offsetHeight;
+        this.modal.style.setProperty('--header-height', `${headerHeight}px`);
+      }
+    }
     updateFullscreenIcon(isFullscreen) { const fullscreenBtn = this.modal.querySelector('.fullscreen-btn'); const enterIcon = fullscreenBtn.querySelector('.fullscreen-icon'); const exitIcon = fullscreenBtn.querySelector('.exit-fullscreen-icon'); enterIcon.style.display = isFullscreen ? 'none' : 'block'; exitIcon.style.display = isFullscreen ? 'block' : 'none'; }
     toggleZoomButtons(show) { const buttons = this.modal.querySelectorAll('.zoom-in, .zoom-out, .zoom-reset'); buttons.forEach(btn => btn.style.display = show ? 'flex' : 'none'); }
     close() { this.modal.classList.remove('active', 'fullscreen'); this.modal.setAttribute('aria-hidden', 'true'); this.imageViewer.setAttribute('src', ''); document.body.style.overflow = ''; this.reset(); this.updateFullscreenIcon(false); this.toggleZoomButtons(false); }

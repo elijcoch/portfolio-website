@@ -613,50 +613,38 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   padding: 12px 16px;
   background: rgba(0, 0, 0, 0.9);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.modal.fullscreen .project-gallery {
-  height: calc(100vh - 60px);
-  width: 100%;
-  border: none;
-  padding: 0;
-  border-radius: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Overlay controls inside project gallery */
-.project-gallery-controls {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 5;
-}
-
-/* Make gallery control buttons solid and always visible over images */
-.project-gallery-controls .zoom-btn,
-.project-gallery-controls .fullscreen-btn {
-  background: rgba(0,0,0,0.9);
-  color: #fff;
-  border-color: rgba(255,255,255,0.4);
-}
-.project-gallery-controls .zoom-btn:hover,
-.project-gallery-controls .fullscreen-btn:hover {
-  background: rgba(0,0,0,1);
-  color: #fff;
-  border-color: rgba(255,255,255,0.6);
+  position: relative;
+  z-index: 11;
 }
 
 /* Position controls in top-right corner below header in fullscreen mode */
-.modal.fullscreen .project-gallery-controls {
+.modal.fullscreen .project-gallery-controls,
+.modal.fullscreen .cert-image-controls {
   position: fixed;
-  top: 68px;
+  top: auto;
   right: 8px;
+  bottom: auto;
   z-index: 10;
+  /* Position directly below the modal header */
+  margin-top: 8px;
+}
+
+/* Ensure controls stay below header by calculating from header bottom */
+.modal.fullscreen .modal-header {
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 11;
+}
+
+/* Calculate controls position based on actual header height */
+@supports (top: calc(0px)) {
+  .modal.fullscreen .project-gallery-controls,
+  .modal.fullscreen .cert-image-controls {
+    /* Use viewport height calculation to stay below flexible header */
+    top: calc(var(--header-height, 60px) + 8px);
+  }
 }
 
 .projects-grid {
@@ -911,6 +899,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   position: relative; 
   background: #141414; 
   border: 1px solid var(--border-color); 
+  border: none;
   border-radius: 8px; 
   display: flex; 
   align-items: flex-start; 
@@ -932,28 +921,25 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   z-index: 5;
 }
 
-/* Make gallery control buttons solid and always visible over images */
-.project-gallery-controls .zoom-btn,
-.project-gallery-controls .fullscreen-btn {
-  background: rgba(0,0,0,0.9);
-  color: #fff;
-  border-color: rgba(255,255,255,0.4);
-}
-.project-gallery-controls .zoom-btn:hover,
-.project-gallery-controls .fullscreen-btn:hover {
-  background: rgba(0,0,0,1);
-  color: #fff;
-  border-color: rgba(255,255,255,0.6);
+/* Certificate modal image container and controls - similar to project gallery */
+.cert-image-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Position controls in top-right corner below header in fullscreen mode */
-.modal.fullscreen .project-gallery-controls {
-  position: fixed;
-  top: 68px;
+.cert-image-controls {
+  position: absolute;
+  top: 8px;
   right: 8px;
-  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 5;
 }
 
+/* Gallery navigation arrows */
 .gallery-btn {
   position: absolute;
   background: rgba(0,0,0,0.9);
@@ -981,6 +967,24 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 }
 .gallery-btn:hover {
   background: rgba(0,0,0,1);
+  border-color: rgba(255,255,255,0.6);
+}
+
+/* Make gallery control buttons solid and always visible over images */
+.project-gallery-controls .zoom-btn,
+.project-gallery-controls .fullscreen-btn,
+.cert-image-controls .zoom-btn,
+.cert-image-controls .fullscreen-btn {
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+  border-color: rgba(255,255,255,0.4);
+}
+.project-gallery-controls .zoom-btn:hover,
+.project-gallery-controls .fullscreen-btn:hover,
+.cert-image-controls .zoom-btn:hover,
+.cert-image-controls .fullscreen-btn:hover {
+  background: rgba(0,0,0,1);
+  color: #fff;
   border-color: rgba(255,255,255,0.6);
 }
 
@@ -1274,6 +1278,24 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
     font-size: 1.2rem;
     word-wrap: break-word;
     overflow-wrap: break-word;
+  }
+  
+  /* Mobile fullscreen positioning - ensure controls are below header */
+  .modal.fullscreen .cert-image-controls,
+  .modal.fullscreen .project-gallery-controls {
+    position: fixed;
+    top: auto;
+    left: auto;
+    right: 8px;
+    z-index: 10;
+  }
+  
+  /* Calculate position based on header height for mobile */
+  @supports (top: calc(0px)) {
+    .modal.fullscreen .cert-image-controls,
+    .modal.fullscreen .project-gallery-controls {
+      top: calc(var(--header-height, 60px) + 8px);
+    }
   }
 
   .site-footer p { font-size: 0.8rem; }
