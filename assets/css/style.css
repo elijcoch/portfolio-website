@@ -58,7 +58,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 .contact-item + .contact-item { border-top: 1px dashed rgba(255,255,255,0.03); padding-top: 12px; }
 .contact-item:last-child { padding-bottom: 0; }
 .contact-item .icon { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.9); flex: 0 0 36px; }
-.contact-item svg, .contact-item img { width: 18px; height: 18px; display: block; }
+.contact-item svg, .contact-item img { width: 18px, height: 18px; display: block; }
 .contact-item img { filter: brightness(0) invert(1); }
 .contact-text { display: flex; flex-direction: column; }
 .contact-text .label { font-size: 0.72rem; color: rgba(255,255,255,0.7); margin-bottom: 3px; }
@@ -1226,8 +1226,24 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   .carousel-dot.active { background: #fff; }
   .carousel-dot:focus { outline: 2px solid #fff; outline-offset: 2px; }
 
-  .modal-header { padding: 16px 20px; padding-right: 96px; }
-  .modal-header-content { gap: 12px; }
+  .modal-header { 
+    padding: 16px 20px; 
+    padding-right: 20px;
+    position: relative;
+    min-height: 60px;
+  }
+  
+  .modal-controls {
+    top: 16px;
+    left: 20px;
+    right: 20px;
+    justify-content: flex-start;
+  }
+  
+  .modal-header-content { 
+    gap: 12px;
+    padding-right: 150px;
+  }
   
   .modal-title-wrapper {
     gap: 2px;
@@ -1246,10 +1262,32 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
     display: none !important;
   }
 
-  .modal-title { font-size: 1.2rem; }
-  .modal-controls { gap: 6px; top: 6px; right: 6px; }
+  .modal-title { 
+    font-size: 1.2rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 
   .site-footer p { font-size: 0.8rem; }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 12px 16px;
+    padding-top: 60px;
+    min-height: auto;
+  }
+  
+  /* For very small screens, dock the zoom/fullscreen controls to the left
+     and keep the close button on the right (using margin-left:auto). */
+  .modal-controls {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    justify-content: flex-start;
+  }
+
+  .modal-controls .modal-close { margin-left: auto; }
 }
 
 .status-badge {
