@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const certModal = new ImageModal(modals.cert, 'cert-image-viewer');
+  const projectImageModal = modals.project ? new ImageModal(modals.project, 'project-gallery-image') : null;
 
   const openModal = (certName, imagePath, iconPath, isCertification, issuer, date) => {
     const modalTitle = document.getElementById('modal-title');
@@ -374,6 +375,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let galleryImages = []; let galleryIndex = 0;
   const openProjectModal = (card) => {
     if (!projectModal) return;
+    if (projectImageModal) { projectImageModal.reset(); projectImageModal.updateFullscreenIcon(false); projectImageModal.toggleZoomButtons(false); }
     const title = card.getAttribute('data-title') || card.querySelector('.project-title')?.textContent || 'Project';
     const dates = card.getAttribute('data-dates') || '';
     const description = card.getAttribute('data-description') || card.querySelector('.project-description')?.textContent || '';
@@ -382,12 +384,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const skillsContainer = projectModal.querySelector('.project-skills'); skillsContainer.innerHTML = '';
     card.querySelectorAll('.project-tags li').forEach(tag => { const skillName = tag.getAttribute('data-skill') || tag.textContent.trim(); const detail = tag.getAttribute('data-skill-detail') || ''; const detailsEl = document.createElement('details'); detailsEl.className = 'project-skill'; const summaryEl = document.createElement('summary'); summaryEl.textContent = skillName; detailsEl.appendChild(summaryEl); if (detail) { const p = document.createElement('p'); p.textContent = detail; detailsEl.appendChild(p); } skillsContainer.appendChild(detailsEl); });
     if (projectModalGithub) { const cardRepoEl = card.querySelector('.project-github'); const repoHref = cardRepoEl?.getAttribute('href') || ''; if (repoHref) { projectModalGithub.href = repoHref; projectModalGithub.removeAttribute('hidden'); projectModalGithub.style.display = ''; } else { projectModalGithub.setAttribute('hidden', ''); projectModalGithub.removeAttribute('href'); } }
-    projectModalTitle.textContent = title; projectModal.querySelector('.project-dates').textContent = dates; const typeBadgeModal = projectModal.querySelector('.project-type-badge'); if (typeBadgeModal) { if (typeBadge) { typeBadgeModal.textContent = typeBadge; typeBadgeModal.style.display = ''; } else { typeBadgeModal.style.display = 'none'; } }
+    projectModalTitle.textContent = title; projectModal.querySelector('.project-dates').textContent = dates; const typeBadgeModal = projectModal.querySelector('.project-type-badge-modal'); if (typeBadgeModal) { if (typeBadge) { typeBadgeModal.textContent = typeBadge; typeBadgeModal.style.display = ''; } else { typeBadgeModal.style.display = 'none'; } }
     projectModal.querySelector('.project-description-text').textContent = description;
     galleryImages = gallery.length ? gallery : [card.querySelector('.project-media img')?.getAttribute('src')].filter(Boolean); galleryIndex = 0; updateProjectGallery();
     projectModal.classList.add('active'); projectModal.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';
   };
-  const closeProjectModal = () => { if (!projectModal) return; projectModal.classList.remove('active'); projectModal.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; projectGalleryImage.setAttribute('src', ''); galleryImages = []; galleryIndex = 0; };
+  const closeProjectModal = () => { if (!projectModal) return; if (projectImageModal) projectImageModal.close(); projectModal.classList.remove('active'); projectModal.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; projectGalleryImage.setAttribute('src', ''); galleryImages = []; galleryIndex = 0; };
   const updateProjectGallery = () => { if (!projectGalleryImage || !galleryImages.length) return; projectGalleryImage.setAttribute('src', galleryImages[galleryIndex]); projectGalleryImage.setAttribute('alt', `${projectModalTitle.textContent} image ${galleryIndex + 1}`); };
   const nextImage = () => { if (galleryImages.length) { galleryIndex = (galleryIndex + 1) % galleryImages.length; updateProjectGallery(); } };
   const prevImage = () => { if (galleryImages.length) { galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length; updateProjectGallery(); } };
