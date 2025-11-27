@@ -105,12 +105,17 @@ document.addEventListener('DOMContentLoaded', function () {
       const zoomIn = this.modal.querySelector('.zoom-in');
       const zoomOut = this.modal.querySelector('.zoom-out');
       const zoomReset = this.modal.querySelector('.zoom-reset');
+      // cache elements for grouping
+      this.controlsContainer = this.modal.querySelector('.modal-header .modal-controls');
+      this.closeBtn = this.modal.querySelector('.modal-header .modal-close');
+      this.headerEl = this.modal.querySelector('.modal-header');
 
       if (fullscreenBtn) {
         fullscreenBtn.addEventListener('click', () => {
           const isFullscreen = this.modal.classList.toggle('fullscreen');
           this.updateFullscreenIcon(isFullscreen);
           this.toggleZoomButtons(isFullscreen);
+          this.updateControlGrouping(isFullscreen);
           if (!isFullscreen) this.reset();
         });
       }
@@ -118,6 +123,63 @@ document.addEventListener('DOMContentLoaded', function () {
       if (zoomIn) zoomIn.addEventListener('click', () => this.zoom(this.zoomLevel + this.ZOOM_STEP));
       if (zoomOut) zoomOut.addEventListener('click', () => this.zoom(this.zoomLevel - this.ZOOM_STEP));
       if (zoomReset) zoomReset.addEventListener('click', () => this.reset());
+
+      // handle responsive regrouping on resize when fullscreen
+      window.addEventListener('resize', () => {
+        if (this.modal.classList.contains('fullscreen')) {
+          this.updateControlGrouping(true);
+        }
+      });
+    }
+
+    updateControlGrouping(isFullscreen) {
+      if (!this.controlsContainer || !this.closeBtn) return;
+      const isDesktop = window.matchMedia('(min-width: 701px)').matches;
+      if (isFullscreen && isDesktop) {
+        if (this.closeBtn.parentElement !== this.controlsContainer) {
+          this.controlsContainer.appendChild(this.closeBtn);
+        }
+        this.controlsContainer.classList.add('grouped');
+        // force top-right positioning overriding fullscreen CSS that moves to left
+        Object.assign(this.controlsContainer.style, {
+          left: 'auto',
+          right: '8px',
+          top: '8px',
+          justifyContent: 'flex-end'
+        });
+        Object.assign(this.closeBtn.style, {
+          position: 'static',
+          background: 'rgba(255,255,255,0.05)',
+          border: '1px solid var(--border-color)',
+          width: '40px',
+          height: '40px',
+          fontSize: '1.75rem',
+          color: 'var(--text-secondary)'
+        });
+      } else {
+        // restore close button outside and default styles
+        if (this.closeBtn.parentElement === this.controlsContainer) {
+          this.headerEl.appendChild(this.closeBtn);
+        }
+        this.controlsContainer.classList.remove('grouped');
+        // clear inline overrides so CSS rules apply normally
+        Object.assign(this.controlsContainer.style, {
+          left: '',
+          right: '',
+          top: '',
+          justifyContent: ''
+        });
+        Object.assign(this.closeBtn.style, {
+          position: 'absolute',
+          top: '8px',
+          right: '8px',
+          background: 'transparent',
+          border: 'none',
+          width: '36px',
+          height: '36px',
+          fontSize: '2rem'
+        });
+      }
     }
 
     initDragEvents() {
@@ -384,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const skillsContainer = projectModal.querySelector('.project-skills'); skillsContainer.innerHTML = '';
     card.querySelectorAll('.project-tags li').forEach(tag => { const skillName = tag.getAttribute('data-skill') || tag.textContent.trim(); const detail = tag.getAttribute('data-skill-detail') || ''; const detailsEl = document.createElement('details'); detailsEl.className = 'project-skill'; const summaryEl = document.createElement('summary'); summaryEl.textContent = skillName; detailsEl.appendChild(summaryEl); if (detail) { const p = document.createElement('p'); p.textContent = detail; detailsEl.appendChild(p); } skillsContainer.appendChild(detailsEl); });
     if (projectModalGithub) { const cardRepoEl = card.querySelector('.project-github'); const repoHref = cardRepoEl?.getAttribute('href') || ''; if (repoHref) { projectModalGithub.href = repoHref; projectModalGithub.removeAttribute('hidden'); projectModalGithub.style.display = ''; } else { projectModalGithub.setAttribute('hidden', ''); projectModalGithub.removeAttribute('href'); } }
-    projectModalTitle.textContent = title; projectModal.querySelector('.project-dates').textContent = dates; const typeBadgeModal = projectModal.querySelector('.project-type-badge-modal'); if (typeBadgeModal) { if (typeBadge) { typeBadgeModal.textContent = typeBadge; typeBadgeModal.style.display = ''; } else { typeBadgeModal.style.display = 'none'; } }
+    projectModalTitle.textContent = title; projectModal.querySelector('.project-dates').textContent = dates; const typeBadgeModal = projectModal.querySelector('.project-type-badge'); if (typeBadgeModal) { if (typeBadge) { typeBadgeModal.textContent = typeBadge; typeBadgeModal.style.display = ''; } else { typeBadgeModal.style.display = 'none'; } }
     projectModal.querySelector('.project-description-text').textContent = description;
     galleryImages = gallery.length ? gallery : [card.querySelector('.project-media img')?.getAttribute('src')].filter(Boolean); galleryIndex = 0; updateProjectGallery();
     projectModal.classList.add('active'); projectModal.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';

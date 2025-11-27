@@ -440,10 +440,11 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 .modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-color);
   padding-right: 120px;
+  position: relative;
 }
 
 .modal-title-wrapper {
@@ -470,6 +471,37 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   color: var(--text-muted);
   margin: 0;
 }
+
+.modal-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: static;
+  top: auto;
+  right: auto;
+  z-index: 1;
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  font-size: 1.75rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
 
 .modal-header-content {
   display: flex;
@@ -754,7 +786,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   font-weight: 700;
   padding: 4px 8px;
   background: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255,255,255,0.3);
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1243,22 +1275,35 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   .carousel-dot:focus { outline: 2px solid #fff; outline-offset: 2px; }
 
   .modal-header { 
-    padding: 16px 20px; 
+    padding: 56px 20px 16px;
     padding-right: 20px;
     position: relative;
-    min-height: 60px;
+    min-height: auto;
   }
   
   .modal-controls {
-    top: 16px;
-    left: 20px;
-    right: 20px;
+    top: 8px;
+    left: 8px;
+    right: auto;
+    width: auto;
     justify-content: flex-start;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  
+  .modal-close {
+    order: 2;
+  }
+  
+  .zoom-btn,
+  .fullscreen-btn,
+  .project-modal-github {
+    order: 1;
   }
   
   .modal-header-content { 
     gap: 12px;
-    padding-right: 150px;
+    padding-right: 0;
   }
   
   .modal-title-wrapper {
@@ -1289,21 +1334,29 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 
 @media (max-width: 480px) {
   .modal-header {
-    padding: 12px 16px;
-    padding-top: 60px;
+    padding: 56px 16px 12px;
     min-height: auto;
   }
   
-  /* For very small screens, dock the zoom/fullscreen controls to the left
-     and keep the close button on the right (using margin-left:auto). */
   .modal-controls {
     top: 8px;
     left: 8px;
-    right: 8px;
+    right: auto;
+    width: auto;
     justify-content: flex-start;
+    gap: 8px;
+    flex-wrap: nowrap;
   }
-
-  .modal-controls .modal-close { margin-left: auto; }
+  
+  .modal-close {
+    order: 2;
+  }
+  
+  .zoom-btn,
+  .fullscreen-btn,
+  .project-modal-github {
+    order: 1;
+  }
 }
 
 .status-badge {
@@ -1367,3 +1420,60 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   object-fit: contain;
 }
 
+.modal.fullscreen .modal-controls {
+  top: 8px;
+  left: 8px;
+  right: auto;
+  width: auto;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+@media (min-width: 701px) {
+  .modal-header .modal-controls { right: 56px; }
+}
+
+.modal-close,
+button.modal-close,
+.modal .modal-close,
+button[aria-label^="Close"],
+button[aria-label*="close" i],
+button[aria-label*="Close" i] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.modal-close:hover,
+.modal-close:focus,
+button[aria-label^="Close"]:hover,
+button[aria-label^="Close"]:focus,
+button[aria-label*="close" i]:hover,
+button[aria-label*="close" i]:focus {
+  background: transparent !important;
+  border: none !important;
+  color: inherit !important;
+  outline: none !important;
+}
+
+/* Ensure different size variants remain presentational but without background/border */
+.modal-close[style],
+.modal-close[aria-hidden],
+.modal .modal-close[style] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Mobile-specific override */
+@media (max-width: 700px) {
+  .modal-close,
+  button[aria-label^="Close"],
+  button[aria-label*="close" i] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
