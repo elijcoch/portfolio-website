@@ -58,7 +58,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 .contact-item + .contact-item { border-top: 1px dashed rgba(255,255,255,0.03); padding-top: 12px; }
 .contact-item:last-child { padding-bottom: 0; }
 .contact-item .icon { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.9); flex: 0 0 36px; }
-.contact-item svg, .contact-item img { width: 18px, height: 18px; display: block; }
+.contact-item svg, .contact-item img { width: 18px; height: 18px; display: block; }
 .contact-item img { filter: brightness(0) invert(1); }
 .contact-text { display: flex; flex-direction: column; }
 .contact-text .label { font-size: 0.72rem; color: rgba(255,255,255,0.7); margin-bottom: 3px; }
@@ -1304,25 +1304,24 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   .modal-header-content { 
     gap: 12px;
     padding-right: 0;
-  }
-  
-  .modal-title-wrapper {
-    gap: 2px;
-  }
-  
-  .modal-issuer {
-    font-size: 0.8rem;
-  }
-  
-  .modal-date {
-    font-size: 0.75rem;
-  }
-  
-  .letter-recommender-photo,
-  .cert-modal-icon {
-    display: none !important;
+    flex-wrap: nowrap; /* keep icon and title on the same row */
   }
 
+  /* allow title area to wrap while staying to the right of the icon */
+  .modal-header-content .modal-title-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* prevent the icon from shrinking and keep it on the left */
+  .letter-recommender-photo,
+  .cert-modal-icon {
+    flex: 0 0 auto;
+    display: block !important;
+    width: 56px;
+    height: 56px;
+  }
+  
   .modal-title { 
     font-size: 1.2rem;
     word-wrap: break-word;
@@ -1356,6 +1355,13 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   .fullscreen-btn,
   .project-modal-github {
     order: 1;
+  }
+
+  /* Tighter icon size on very small screens */
+  .letter-recommender-photo,
+  .cert-modal-icon {
+    width: 48px;
+    height: 48px;
   }
 }
 
