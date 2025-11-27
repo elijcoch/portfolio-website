@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
       this.ZOOM_STEP = 0.1;
       this.MIN_ZOOM = 0.5;
       this.MAX_ZOOM = 3;
+      this.INITIAL_FULLSCREEN_ZOOM = 0.75;
       this.initControls();
       this.initDragEvents();
     }
@@ -116,7 +117,15 @@ document.addEventListener('DOMContentLoaded', function () {
           this.updateFullscreenIcon(isFullscreen);
           this.toggleZoomButtons(isFullscreen);
           this.updateControlGrouping(isFullscreen);
-          if (!isFullscreen) this.reset();
+          if (isFullscreen) {
+            // Start at 75% zoom when entering fullscreen
+            this.zoomLevel = this.INITIAL_FULLSCREEN_ZOOM;
+            this.translateX = 0;
+            this.translateY = 0;
+            this.updateTransform();
+          } else {
+            this.reset();
+          }
         });
       }
 
