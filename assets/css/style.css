@@ -48,8 +48,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 }
 
 .headshot { text-align: center; margin-bottom: 12px; }
-.headshot img { width: 200px; height: 200px; object-fit: cover; border-radius: 50%; border: 5px solid rgba(255,255,255,0.15); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; }
-.headshot img:hover { transform: scale(1.05); border-color: rgba(255,255,255,0.25); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5); }
+.headshot img { width: 250px; height: 250px; object-fit: cover; border-radius: 50%; border: 5px solid rgba(255,255,255,0.15); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; }
 
 .name { font-size: 1.25rem; font-weight: 700; text-align: center; margin: 12px 0 4px; color: #ffffff; }
 .role { text-align: center; margin: 0 0 18px; color: var(--muted); font-size: 0.95rem; font-weight: 300; }
@@ -130,7 +129,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 
 .certification-item,
 .education-item {
-  padding: 16px;
+  padding: 24px 18px 18px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 8px;
   border: 1px solid var(--border-color);
@@ -139,6 +138,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   display: flex;
   gap: 16px;
   align-items: center;
+  position: relative;
 }
 
 .education-item {
@@ -162,21 +162,59 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 
 .cert-icon,
 .school-logo {
-  flex: 0 0 60px;
-  width: 60px;
-  height: 60px;
+  flex: 0 0 80px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid var(--border-color);
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   padding: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .school-logo {
   flex: 0 0 80px;
   width: 80px;
   height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 8px;
+  border: 2px solid var(--border-color);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.cert-icon:hover,
+.school-logo:hover {
+  border-color: rgba(255,255,255,0.3);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cert-modal-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  padding: 8px;
+  object-fit: contain;
+  display: block;
+}
+.cert-modal-icon.recommender-photo {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cert-modal-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .cert-icon img,
@@ -249,12 +287,6 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   background: rgba(255, 255, 255, 0.1);
 }
 
-.school-link svg { width: 18px; height: 18px; flex-shrink: 0; }
-
-.school-link-text {
-  white-space: nowrap;
-}
-
 .recommendations-list {
   display: grid;
   gap: 24px;
@@ -299,7 +331,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
 .recommender-photo:hover {
   border-color: rgba(255, 255, 255, 0.3);
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .recommender-photo img {
@@ -399,6 +431,33 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-color);
+  /* Reserve space so absolute-positioned controls don't overlap title */
+  padding-right: 120px;
+}
+
+.modal-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.modal-issuer {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 400;
+}
+
+.modal-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
 }
 
 .modal-header-content {
@@ -406,6 +465,7 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   align-items: center;
   gap: 16px;
   flex: 1;
+  flex-wrap: wrap;
 }
 
 .letter-recommender-photo,
@@ -421,9 +481,25 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   transition: all 0.2s ease;
 }
 
+/* Make recommender photo in letter modal match icon size */
+.letter-recommender-photo { width: 80px; height: 80px; }
+
 .cert-modal-icon {
+  width: 80px;
+  height: 80px;
   border-radius: 8px;
   padding: 8px;
+  object-fit: contain;
+  display: block;
+}
+.cert-modal-icon.recommender-photo {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cert-modal-icon img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -432,10 +508,14 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   opacity: 0.9;
 }
 
+.cert-modal-icon.cert-type img {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
 .letter-recommender-photo:hover {
   border-color: rgba(255, 255, 255, 0.3);
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .modal-title {
@@ -448,6 +528,11 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   display: flex;
   align-items: center;
   gap: 8px;
+  /* Move controls to top-right corner of modal */
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
 }
 
 .fullscreen-btn,
@@ -1108,57 +1193,73 @@ h1, h2, h3, h4, h5 { font-family: 'Poppins', 'Rubik', Georgia, 'Times New Roman'
   .carousel-dot.active { background: #fff; }
   .carousel-dot:focus { outline: 2px solid #fff; outline-offset: 2px; }
 
-  .modal-header { padding: 16px 20px; }
+  .modal-header { padding: 16px 20px; padding-right: 96px; }
   .modal-header-content { gap: 12px; }
+  
+  .modal-title-wrapper {
+    gap: 2px;
+  }
+  
+  .modal-issuer {
+    font-size: 0.8rem;
+  }
+  
+  .modal-date {
+    font-size: 0.75rem;
+  }
   
   .letter-recommender-photo,
   .cert-modal-icon {
-    width: 40px;
-    height: 40px;
+    display: none !important;
   }
-  
-  .cert-modal-icon { padding: 6px; }
 
   .modal-title { font-size: 1.2rem; }
-  .modal-controls { gap: 6px; }
-
-  .fullscreen-btn,
-  .zoom-btn,
-  .modal-close { width: 32px; height: 32px; }
-
-  .modal-close { font-size: 1.5rem; }
-  .modal-body { padding: 16px; }
-
-  .project-modal-body { gap: 12px; }
-  
-  .project-gallery { 
-    min-height: auto;
-    padding: 16px;
-    align-items: center;
-  }
-
-  .project-gallery img { max-height: 50vh; }
-
-  .gallery-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
-  }
-
-  .gallery-btn.prev { left: 8px; }
-  .gallery-btn.next { right: 8px; }
-
-  .project-details { gap: 12px; }
-  .project-dates { font-size: 0.85rem; }
-  .project-description-text { font-size: 0.9rem; }
-  .project-skill { padding: 6px 8px; }
-  .project-skill summary { font-size: 0.85rem; }
-  .project-skill p { font-size: 0.8rem; }
-
-  .site-footer {
-    margin-top: 0;
-    padding: 24px 0;
-  }
+  .modal-controls { gap: 6px; top: 6px; right: 6px; }
 
   .site-footer p { font-size: 0.8rem; }
 }
+
+/* Status badge for education and certification cards */
+.status-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  background: linear-gradient(90deg, rgba(46,204,64,0.18) 60%, rgba(39,174,96,0.18) 100%);
+  color: #fff;
+  font-size: 0.60rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  border: 2px solid #2ecc40;
+  display: inline-block;
+}
+.status-badge.inprogress {
+  background: linear-gradient(90deg, rgba(243,156,18,0.18) 60%, rgba(230,126,34,0.18) 100%);
+  border-color: #f39c12;
+}
+
+@media (max-width: 700px) {
+  .status-badge {
+    font-size: 0.48rem;
+    padding: 2.5px 8px;
+    top: 4px;
+    right: 4px;
+    border-radius: 7px;
+  }
+  .status-badge.inprogress {
+    font-size: 0.56rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+  }
+}
+
+#letter-modal .modal-body {
+  overflow: hidden;
+  /* Remove scrollbars and scrolling for the recommendation letter modal */
+}
+

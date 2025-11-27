@@ -20,11 +20,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const mq = window.matchMedia('(max-width: 700px)');
 
+    // Helper to check if contact and footer overlap
+    const isOverlappingFooter = () => {
+      if (!contact.classList.contains('open')) return false;
+      const contactRect = contact.getBoundingClientRect();
+      const footerRect = footer.getBoundingClientRect();
+      // Check if contact's bottom is below footer's top
+      return contactRect.bottom > footerRect.top;
+    };
+
     const isOverflowing = () => {
       const wasOpen = contact.classList.contains('open');
       contact.classList.add('open');
       contact.setAttribute('aria-hidden', 'false');
-      const overflowing = sidebar.scrollHeight > window.innerHeight;
+      const overflowing = sidebar.scrollHeight > window.innerHeight || isOverlappingFooter();
       if (!wasOpen) { contact.classList.remove('open'); contact.setAttribute('aria-hidden', 'true'); }
       return overflowing;
     };
@@ -73,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const modals = {
     cert: document.getElementById('cert-modal'),
-    letter: document.getElementById('letter-modal'),
     project: document.getElementById('project-modal')
   };
 
@@ -150,23 +158,39 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const certModal = new ImageModal(modals.cert, 'cert-image-viewer');
-  const letterModal = new ImageModal(modals.letter, 'letter-image-viewer');
 
-  const openModal = (certName, imagePath, iconPath, isCertification) => {
+  const openModal = (certName, imagePath, iconPath, isCertification, issuer, date) => {
     const modalTitle = document.getElementById('modal-title');
+    const modalIssuer = document.getElementById('modal-issuer');
+    const modalDate = document.getElementById('modal-date');
     const certIcon = modals.cert.querySelector('#cert-icon');
     modalTitle.textContent = certName;
+    modalIssuer.textContent = issuer || '';
+    modalDate.textContent = date || '';
     certModal.imageViewer.setAttribute('src', imagePath);
     certModal.imageViewer.setAttribute('alt', `${certName} Certification`);
     if (certIcon) {
+      certIcon.classList.remove('recommender-photo');
       if (iconPath) {
         certIcon.setAttribute('src', iconPath);
         certIcon.setAttribute('alt', `${certName} icon`);
         certIcon.style.display = 'block';
         certIcon.classList.toggle('cert-type', isCertification);
+        let providerUrl = '';
+        if (isCertification) {
+          const certItem = Array.from(document.querySelectorAll('.certification-item')).find(ci => ci.querySelector('.cert-icon img')?.getAttribute('src') === iconPath);
+          providerUrl = certItem?.getAttribute('data-cert-url') || '';
+        } else {
+          const parentItem = document.querySelector(`.education-item[data-credential-image][data-school-url] .school-logo img[src="${iconPath}"]`)?.closest('.education-item');
+          providerUrl = parentItem?.getAttribute('data-school-url') || '';
+        }
+        certIcon.style.cursor = providerUrl ? 'pointer' : '';
+        certIcon.onclick = providerUrl ? () => window.open(providerUrl, '_blank', 'noopener') : null;
       } else {
         certIcon.style.display = 'none';
         certIcon.classList.remove('cert-type');
+        certIcon.onclick = null;
+        certIcon.style.cursor = '';
       }
     }
     modals.cert.classList.add('active');
@@ -179,11 +203,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const openCert = () => {
       const imagePath = item.getAttribute('data-image');
       const certName = item.querySelector('.cert-name').textContent;
+      const certIssuer = item.querySelector('.cert-issuer')?.textContent || '';
+      const certDate = item.querySelector('.cert-date')?.textContent || '';
       const iconPath = item.querySelector('.cert-icon img')?.getAttribute('src');
-      openModal(certName, imagePath, iconPath, true);
+      openModal(certName, imagePath, iconPath, true, certIssuer, certDate);
     };
     item.addEventListener('click', openCert);
     item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCert(); } });
+
+    const certIconEl = item.querySelector('.cert-icon');
+    const certUrl = item.getAttribute('data-cert-url');
+    if (certIconEl) {
+      certIconEl.style.cursor = 'pointer';
+      certIconEl.addEventListener('click', (e) => { e.stopPropagation(); if (certUrl) window.open(certUrl, '_blank', 'noopener'); });
+      certIconEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); if (certUrl) window.open(certUrl, '_blank', 'noopener'); } });
+    }
   });
 
   const modalClose = modals.cert.querySelector('.modal-close');
@@ -191,65 +225,80 @@ document.addEventListener('DOMContentLoaded', function () {
   if (modalClose) modalClose.addEventListener('click', () => certModal.close());
   if (modalOverlay) modalOverlay.addEventListener('click', () => certModal.close());
 
-  const openLetterModal = (recommenderName, imagePath, photoPath) => {
-    const letterModalTitle = document.getElementById('letter-modal-title');
-    const recommenderPhoto = modals.letter.querySelector('#letter-recommender-photo');
-    letterModalTitle.textContent = `Recommendation from ${recommenderName}`;
-    letterModal.imageViewer.setAttribute('src', imagePath);
-    letterModal.imageViewer.setAttribute('alt', `${recommenderName} Recommendation Letter`);
-    if (recommenderPhoto) {
-      if (photoPath) {
-        recommenderPhoto.setAttribute('src', photoPath);
-        recommenderPhoto.setAttribute('alt', `Photo of ${recommenderName}`);
-        recommenderPhoto.style.display = 'block';
-      } else { recommenderPhoto.style.display = 'none'; }
-    }
-    modals.letter.classList.add('active');
-    modals.letter.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-  };
-
+  // Recommendation letter items now use cert-modal
   const recommendationItems = document.querySelectorAll('.recommendation-item[data-letter-image]');
   recommendationItems.forEach(item => {
-    const photoElement = item.querySelector('.recommender-photo');
-    item.addEventListener('click', (e) => {
-      if (!e.target.closest('.recommender-photo')) {
-        const imagePath = item.getAttribute('data-letter-image');
-        const photoPath = item.getAttribute('data-recommender-photo');
-        const recommenderName = item.querySelector('.recommender-name').textContent;
-        openLetterModal(recommenderName, imagePath, photoPath);
+    const openLetter = () => {
+      const imagePath = item.getAttribute('data-letter-image');
+      const photoPath = item.getAttribute('data-recommender-photo');
+      const recommenderName = item.getAttribute('data-recommender-name') || item.querySelector('.recommender-name')?.textContent || '';
+      const relationship = item.getAttribute('data-recommender-relationship') || item.querySelector('.recommender-relationship')?.textContent || '';
+      const date = item.getAttribute('data-recommendation-date') || item.querySelector('.recommendation-date')?.textContent || '';
+      // Use cert-modal for recommendation letter
+      const modalTitle = document.getElementById('modal-title');
+      const modalIssuer = document.getElementById('modal-issuer');
+      const modalDate = document.getElementById('modal-date');
+      const certIcon = modals.cert.querySelector('#cert-icon');
+      modalTitle.textContent = `Recommendation from ${recommenderName}`;
+      modalIssuer.textContent = relationship || '';
+      modalDate.textContent = date || '';
+      certModal.imageViewer.setAttribute('src', imagePath);
+      certModal.imageViewer.setAttribute('alt', `${recommenderName} Recommendation Letter`);
+      if (certIcon) {
+        if (photoPath) {
+          certIcon.setAttribute('src', photoPath);
+          certIcon.setAttribute('alt', `Photo of ${recommenderName}`);
+          certIcon.style.display = 'block';
+          certIcon.classList.remove('cert-type');
+          certIcon.classList.add('recommender-photo');
+          certIcon.onclick = null;
+          certIcon.style.cursor = '';
+        } else {
+          certIcon.style.display = 'none';
+          certIcon.classList.remove('cert-type', 'recommender-photo');
+          certIcon.onclick = null;
+          certIcon.style.cursor = '';
+        }
       }
-    });
-    item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); const imagePath = item.getAttribute('data-letter-image'); const photoPath = item.getAttribute('data-recommender-photo'); const recommenderName = item.querySelector('.recommender-name').textContent; openLetterModal(recommenderName, imagePath, photoPath); } });
-    if (photoElement) {
-      photoElement.addEventListener('click', (e) => { e.stopPropagation(); const photoPath = item.getAttribute('data-recommender-photo'); const recommenderName = item.querySelector('.recommender-name').textContent; if (photoPath) openModal(recommenderName, photoPath, null, false); });
-    }
+      modals.cert.classList.add('active');
+      modals.cert.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+    item.addEventListener('click', openLetter);
+    item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLetter(); } });
   });
-
-  const letterModalClose = modals.letter.querySelector('.modal-close');
-  const letterModalOverlay = modals.letter.querySelector('.modal-overlay');
-  if (letterModalClose) letterModalClose.addEventListener('click', () => letterModal.close());
-  if (letterModalOverlay) letterModalOverlay.addEventListener('click', () => letterModal.close());
-
-  const letterModalPhoto = document.getElementById('letter-recommender-photo');
-  if (letterModalPhoto) {
-    letterModalPhoto.addEventListener('click', function() {
-      const photoSrc = this.getAttribute('src');
-      const photoAlt = this.getAttribute('alt');
-      if (photoSrc) { letterModal.close(); const recommenderName = photoAlt.replace('Photo of ', ''); openModal(recommenderName, photoSrc, null, false); }
-    });
-  }
 
   const educationCredentialItems = document.querySelectorAll('.education-item[data-credential-image]');
   educationCredentialItems.forEach(item => {
     const degreeEl = item.querySelector('.degree');
     const title = degreeEl ? degreeEl.textContent : 'Credential';
-    const schoolLink = item.querySelector('.school-link');
+    const institution = item.querySelector('.institution')?.textContent || '';
+    const educationDate = item.querySelector('.education-date')?.textContent || '';
     const openCredential = () => {
       const imagePath = item.getAttribute('data-credential-image');
-      if (imagePath) { const iconPath = item.querySelector('.school-logo img')?.getAttribute('src'); openModal(title, imagePath, iconPath, false); }
+      if (imagePath) { 
+        const iconPath = item.querySelector('.school-logo img')?.getAttribute('src'); 
+        openModal(title, imagePath, iconPath, false, institution, educationDate); 
+      }
     };
-    if (schoolLink) { schoolLink.addEventListener('click', (e) => { e.stopPropagation(); }); }
+
+    const schoolUrl = item.getAttribute('data-school-url');
+    const schoolLogo = item.querySelector('.school-logo');
+    if (schoolLogo) {
+      schoolLogo.style.cursor = 'pointer';
+      schoolLogo.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (schoolUrl) window.open(schoolUrl, '_blank', 'noopener');
+      });
+      schoolLogo.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.stopPropagation();
+          if (schoolUrl) window.open(schoolUrl, '_blank', 'noopener');
+        }
+      });
+    }
+
     item.setAttribute('role', item.getAttribute('role') || 'button');
     item.setAttribute('tabindex', item.getAttribute('tabindex') || '0');
     item.addEventListener('click', openCredential);
@@ -293,7 +342,15 @@ document.addEventListener('DOMContentLoaded', function () {
       let visibleCount = 0; cards.forEach(card => { const show = category === 'all' || card.getAttribute('data-category') === category; card.style.display = show ? 'flex' : 'none'; card.setAttribute('aria-hidden', !show); if (show) visibleCount++; });
       if (emptyMsg) emptyMsg.hidden = visibleCount !== 0; const updater = carouselUpdaters.get(section); if (updater) updater();
     };
-    buttons.forEach(btn => { btn.addEventListener('click', () => { buttons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); }); btn.classList.add('active'); btn.setAttribute('aria-selected','true'); applySectionFilter(btn.getAttribute('data-filter')); }); });
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected','true');
+        applySectionFilter(btn.getAttribute('data-filter'));
+      });
+    });
     applySectionFilter('all');
   });
 
@@ -320,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const skillsContainer = projectModal.querySelector('.project-skills'); skillsContainer.innerHTML = '';
     card.querySelectorAll('.project-tags li').forEach(tag => { const skillName = tag.getAttribute('data-skill') || tag.textContent.trim(); const detail = tag.getAttribute('data-skill-detail') || ''; const detailsEl = document.createElement('details'); detailsEl.className = 'project-skill'; const summaryEl = document.createElement('summary'); summaryEl.textContent = skillName; detailsEl.appendChild(summaryEl); if (detail) { const p = document.createElement('p'); p.textContent = detail; detailsEl.appendChild(p); } skillsContainer.appendChild(detailsEl); });
     if (projectModalGithub) { const cardRepoEl = card.querySelector('.project-github'); const repoHref = cardRepoEl?.getAttribute('href') || ''; if (repoHref) { projectModalGithub.href = repoHref; projectModalGithub.removeAttribute('hidden'); projectModalGithub.style.display = ''; } else { projectModalGithub.setAttribute('hidden', ''); projectModalGithub.removeAttribute('href'); } }
-    projectModalTitle.textContent = title; projectModal.querySelector('.project-dates').textContent = dates; const typeBadgeModal = projectModal.querySelector('.project-type-badge-modal'); if (typeBadgeModal) { if (typeBadge) { typeBadgeModal.textContent = typeBadge; typeBadgeModal.style.display = ''; } else { typeBadgeModal.style.display = 'none'; } }
+    projectModalTitle.textContent = title; projectModal.querySelector('.project-dates').textContent = dates; const typeBadgeModal = projectModal.querySelector('.project-type-badge'); if (typeBadgeModal) { if (typeBadge) { typeBadgeModal.textContent = typeBadge; typeBadgeModal.style.display = ''; } else { typeBadgeModal.style.display = 'none'; } }
     projectModal.querySelector('.project-description-text').textContent = description;
     galleryImages = gallery.length ? gallery : [card.querySelector('.project-media img')?.getAttribute('src')].filter(Boolean); galleryIndex = 0; updateProjectGallery();
     projectModal.classList.add('active'); projectModal.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden';
@@ -334,5 +391,5 @@ document.addEventListener('DOMContentLoaded', function () {
   if (projectModalOverlay) projectModalOverlay.addEventListener('click', closeProjectModal);
   if (projectNextBtn) projectNextBtn.addEventListener('click', nextImage);
   if (projectPrevBtn) projectPrevBtn.addEventListener('click', prevImage);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (modals.cert.classList.contains('active')) certModal.close(); else if (modals.letter.classList.contains('active')) letterModal.close(); else if (projectModal?.classList.contains('active')) closeProjectModal(); } });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (modals.cert.classList.contains('active')) certModal.close(); else if (projectModal?.classList.contains('active')) closeProjectModal(); } });
 });
