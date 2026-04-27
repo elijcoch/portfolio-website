@@ -389,6 +389,7 @@ h5 {
 .page {
     display: none;
     padding-top: 60px;
+    position: relative;
 }
 
     .page.active {
@@ -455,11 +456,7 @@ h5 {
     gap: 16px;
     align-items: center;
     position: relative;
-}
-
-.education-item {
-    padding: 24px 18px 18px;
-    position: relative;
+    overflow: visible;
 }
 
     .certification-item:hover,
@@ -616,6 +613,7 @@ h5 {
     position: relative;
     transition: all 0.2s ease;
     cursor: pointer;
+    overflow: visible;
 }
 
     .experience-item:hover {
@@ -892,7 +890,8 @@ h5 {
 
 .recommendation-item:hover .view-letter-hint,
 .certification-item:hover .view-letter-hint,
-.education-item:hover .view-letter-hint {
+.education-item:hover .view-letter-hint,
+.experience-item:hover .view-letter-hint {
     color: var(--text-primary);
 }
 
@@ -2179,6 +2178,7 @@ h5 {
     letter-spacing: 0.05em;
     color: var(--text-secondary);
     pointer-events: none;
+    z-index: 10;
 }
 
 @media (max-width: 700px) {
